@@ -11,17 +11,18 @@ var qm = require('qminer');
 var server = require('./server.js');
 // TODO: port evaluation as qm module
 
+// Define stores
+qm.delLock();
+qm.config('qm.conf', true, 8080, 1024);
+//var base = qm.create('qm.conf', 'sensors.def', true);
+global.base = qm.create('qm.conf', 'sensors.def', true);
+
 // Import my modules
 evaluation = require('./my_modules/utils/evaluation.js')
 Utils = {};
 Utils.Data = require('./my_modules/utils/importData.js');
 //Utils.model = require('./my_modules/utils/model.js');
-
-// Define stores
-qm.delLock();
-qm.config('qm.conf', true, 8080, 1024);
-var base = qm.create('qm.conf', 'sensors.def', true);
-//global.base = qm.create('qm.conf', 'sensors.def', true);
+Utils.SpecialDates = require('./my_modules/utils/specialDates.js')
 
 var CounterNode = base.store("CounterNode");
 var Evaluation = base.store("Evaluation");
@@ -135,8 +136,17 @@ Utils.Data.importData([trafficLoadStore], [trafficStore], 10000);
 
 
 console.log(trafficStore.recs.length); // DEBUGING
-console.log("Max speed:" + resampledStore.last.measuredBy.MaxSpeed); //DEBUGING
+//console.log("Max speed:" + resampledStore.last.measuredBy.MaxSpeed); //DEBUGING
 
+console.log(base.getStoreList().map(function (store) { return store.storeName}))
+
+var rec = trafficLoadStore.first;
+var test = new Utils.SpecialDates.SpecialDatesFtrExtractor(base, "./my_modules/utils/specialDates.txt", "Slovenian_holidays");
+console.log(test.getFeature(rec))
+console.log(test.getTmFtrs(rec))
+console.log(test.getCyclicTmFtrs(rec))
+console.log(test.isWeekend(rec))
+console.log(test.isWorkingDay(rec))
 
 ///////////////////// REST SERVER /////////////////////
 // Start the server

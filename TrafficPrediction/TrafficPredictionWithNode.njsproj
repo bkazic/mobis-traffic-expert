@@ -35,6 +35,8 @@
     <Content Include="README.md" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="my_modules\utils\specialDates.js" />
+    <Compile Include="tests\specialDates.js" />
     <Compile Include="TrafficPredictionWithNode.js" />
     <Compile Include="my_modules\utils\importData.js" />
     <Compile Include="server.js" />
@@ -42,6 +44,8 @@
   <ItemGroup>
     <Folder Include="my_modules\" />
     <Folder Include="my_modules\utils\" />
+    <Folder Include="tests\" />
+    <Folder Include="test\" />
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />
