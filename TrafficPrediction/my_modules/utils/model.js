@@ -1,7 +1,8 @@
 //Imports
 var Service = {}; Service.Mobis = {}; Service.Mobis.Utils = {};
 Utils.Baseline = require('./baselinePredictors.js'); // NOT OK!! Check the path
-Utils.tmFtr = require('./dateTimeFtr.js') // NOT OK!! Check the path
+//Utils.tmFtr = require('./dateTimeFtr.js') // DELETE THIS
+Utils.SpecialDates = require('./my_modules/utils/specialDates.js')
 var analytics = require('qminer').analytics;
 
 createBuffers = function (horizons, store) {
@@ -81,8 +82,9 @@ createErrorModels = function (fields, horizon, errMetrics) {
 // LOCALIZED LINEAR REGRESSION //
 ///////////////////////////////// 
 
-model = function (horizons, ftrSpace, store, predictionStore, evaluationStore, target, evalOffset, errorMetrics, predictionFields) {
-
+model = function (base, horizons, ftrSpace, store, predictionStore, evaluationStore, target, evalOffset, errorMetrics, predictionFields) {
+    
+    this.base = base;
     this.horizons = horizons; // TODO: I think I dont need this because the variable is seen allready from the input parameter
     this.featureSpace = ftrSpace;
     this.target = target.name;
@@ -92,7 +94,8 @@ model = function (horizons, ftrSpace, store, predictionStore, evaluationStore, t
 
     this.locAvrgs = createAvrgModels(predictionFields);
     this.linregs = createLinRegModels(predictionFields, horizons); 
-
+    
+    var specialDates = new Utils.SpecialDates.SpecialDatesFtrExtractor(this.base, "./my_modules/utils/specialDates.txt", "Slovenian_holidays");
     errorModels = createErrorModels(predictionFields, horizons, errorMetrics);
 
     //////////////// UPDATE STEP /////////////////
@@ -111,7 +114,8 @@ model = function (horizons, ftrSpace, store, predictionStore, evaluationStore, t
 
                     var trainRec = store[trainRecId];
                     var trainHour = trainRec.DateTime.hour;
-                    var trainWork = Service.Mobis.Utils.tmFtr.isWorkingDay(trainRec);
+                    //var trainWork = Service.Mobis.Utils.tmFtr.isWorkingDay(trainRec); // DELETE THIS!!
+                    var trainWork = specialDates.getFeature(trainRec);
 
                     var predictionFieldName = predictionFields[predictionFieldIdx].field.name;
                     var targetVal = rec[predictionFieldName];
@@ -146,7 +150,8 @@ model = function (horizons, ftrSpace, store, predictionStore, evaluationStore, t
 
             // Select correct linregs model
             var hour = rec.DateTime.hour;
-            var work = Service.Mobis.Utils.tmFtr.isWorkingDay(rec);
+            //var work = Service.Mobis.Utils.tmFtr.isWorkingDay(rec); // DELETE THIS!!
+            var work = specialDates.getFeature(rec);
             // DELETE THIS // var linreg = this.linregs[horizon][work][hour];
 
             // Create prediction record
@@ -271,7 +276,7 @@ exports.newModel = function (modelConf) {
     var errorMetrics = modelConf.errorMetrics;
     var predictionFields = modelConf.predictionFields;  // TODO: what to do if it is not defined (if it is null) ?????
 
-    return new model(horizons, ftrSpace, store, predictionStore, evaluationStore, target, evalOffset, errorMetrics, predictionFields);
+    return new model(base, horizons, ftrSpace, store, predictionStore, evaluationStore, target, evalOffset, errorMetrics, predictionFields);
 }
 
 // About this module
