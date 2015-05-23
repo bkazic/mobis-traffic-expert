@@ -17,16 +17,6 @@
  * 
  */
 
-///////////////////////////////
-//#
-//# ### evaluation.js (use require)
-//#
-//# Evaluation metrics functions.
-//# The library must be loaded using `var evaluation = require('evaluation.js');`.
-//# 
-//# **Functions and properties:**
-//#
-
 // object for online metrics model
 function createOnlineMetric(updateCallback) {
     var error = -1;

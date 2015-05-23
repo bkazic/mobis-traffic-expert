@@ -12,6 +12,7 @@
     "qminer": "^1.1.0"
   },
   "devDependencies": {
-    "mocha": "^2.2.4"
+    "mocha": "^2.2.4",
+    "sleep": "^2.0.0"
   }
 }

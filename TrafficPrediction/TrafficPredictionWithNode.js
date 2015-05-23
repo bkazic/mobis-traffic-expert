@@ -8,21 +8,29 @@
 
 // Import modules
 var qm = require('qminer');
+var path = require('path');
 var server = require('./server.js');
-// TODO: port evaluation as qm module
-
-// Define stores
-qm.delLock();
-qm.config('qm.conf', true, 8080, 1024);
-var base = qm.create('qm.conf', 'sensors.def', true);
-//global.base = qm.create('qm.conf', 'sensors.def', true);
+var evaluation = require('./my_modules/utils/online-evaluation/evaluation.js')
 
 // Import my modules
-evaluation = require('./my_modules/utils/evaluation.js')
 Utils = {};
 Utils.Data = require('./my_modules/utils/importData.js');
-//Utils.Model = require('./my_modules/utils/model.js');
-Utils.SpecialDates = require('./my_modules/utils/specialDates.js')
+Utils.SpecialDates = require('./my_modules/utils/special-dates/special-dates.js')
+Utils.Helper = require('./my_modules/utils/helper.js')
+Model = require('./my_modules/utils/mobis-model/model.js')
+
+//// Define stores
+qm.delLock();
+//qm.config('qm.conf', true, 8080, 1024);
+var base = qm.create('qm.conf', 'sensors.def', true); // How can I spec dbPath??
+
+// TODO: Why cant I use schema with this constructor?
+//qm.delLock();
+//var base = new qm.Base({
+//    mode: 'createClean', 
+//    schema: 'sensors.def',
+//    dbPath: path.join(__dirname, './db')
+//})
 
 var CounterNode = base.store("CounterNode");
 var Evaluation = base.store("Evaluation");
@@ -31,6 +39,7 @@ var trafficLoadStore = base.store('trafficLoadStore');
 var trafficStore = base.store('trafficStore');
 //var mergedStore = base.store('mergedStore'); 
 var resampledStore = base.store('resampledStore');
+
 
 
 ///////////////////// PREPROCESSING FOR TRAFFIC DATA SOURCE /////////////////////
@@ -46,10 +55,10 @@ trafficStore.addStreamAggr({
     name: "Resampled", type: "resampler",
     outStore: resampledStore.name, timestamp: "DateTime",
     fields: [{ name: "NumOfCars", interpolator: "linear" },
-             { name: "Gap", interpolator: "linear" },
-             { name: "Occupancy", interpolator: "linear" },
-             { name: "Speed", interpolator: "linear" },
-             { name: "TrafficStatus", interpolator: "linear" },
+                { name: "Gap", interpolator: "linear" },
+                { name: "Occupancy", interpolator: "linear" },
+                { name: "Speed", interpolator: "linear" },
+                { name: "TrafficStatus", interpolator: "linear" },
     ],
     createStore: false, interval: resampleInterval
 });
@@ -66,11 +75,13 @@ resampledStore.addStreamAggr({
     //saveJson: function () { }
 })
 
-
+// This is used by feature extractor, and updated from MobisModel
+var avrVal = Utils.Helper.newDummyModel();
 
 ////////////////////////////// DEFINING FEATURE SPACE //////////////////////////////
 var modelConf = {
     base: base,
+    locAvr: avrVal, // Not sure if this is ok, has to be debuged
     stores: {
         //"sourceStore": resampledStore,
         //"predictionStore": Predictions,
@@ -97,7 +108,8 @@ var modelConf = {
         { type: "numeric", source: resampledStore.name, field: "Occupancy", normalize: false },
         { type: "numeric", source: resampledStore.name, field: "TrafficStatus", normalize: false },
             //{ type: "jsfunc", source: store.name, name: "AvrVal", fun: getAvrVal.getVal },
-        //{ type: "jsfunc", source: store.name, name: "AvrVal", fun: avrVal.getVal },
+        { type: "jsfunc", source: resampledStore.name, name: "AvrVal", fun: avrVal.getVal },
+        //{ type: "jsfunc", source: resampledStore.name, name: "AvrVal", fun: modelConf.locAvr.getVal },
     ],
     
     predictionFields: [ //TODO: Not sure, if I want to use names of fields or fields??
@@ -128,18 +140,45 @@ var modelConf = {
 }
 
 
-//var mobisModel = Utils.Model.newModel(modelConf);
+var mobisModel = new Model(modelConf);
+
+//////////////////////////// PREDICTION AND EVALUATION ////////////////////////////
+resampledStore.addStreamAggr({
+    name: "analytics",
+    onAdd: function (rec) {
+        //console.log("Working on rec: " + rec.DateTime.string);
+        //eval(breakpoint)
+        //if (rec.$id % 100 == 0) {
+        //    console.log("== 100 records down ==");
+        //    eval(breakpoint)
+        //};
+        
+        //var predictions = mobisModel.predict(rec);    
+        //printj(predictions);
+        
+        mobisModel.predict(rec);
+        
+        mobisModel.update(rec);
+        
+        mobisModel.evaluate(rec);
+        
+        //mobisModel.consoleReport(rec);
+
+    },
+    saveJson: function () { return {} }
+});
 
 
 
 ///////////////////// LOADING DATA: SIMULATING DATA FLOW /////////////////////
 // Load stores
 qm.load.jsonFile(base.store("CounterNode"), "./sandbox/countersNodes.txt");
-//qm.load.jsonFile(base.store('trafficLoadStore'), "./sandbox/measurements_0011_11.txt");
-qm.load.jsonFileLimit(base.store('trafficLoadStore'), "./sandbox/measurements_0011_11.txt",1000);
+qm.load.jsonFile(base.store('trafficLoadStore'), "./sandbox/measurements_0011_11.txt");
+//qm.load.jsonFileLimit(base.store('trafficLoadStore'), "./sandbox/measurements_0011_11.txt",1000);
 
 // Simultaing data flow (later this shuld be replaced by imputor)
-Utils.Data.importData([trafficLoadStore], [trafficStore], 10000);
+Utils.Data.importData([trafficLoadStore], [trafficStore]);
+//Utils.Data.importData([trafficLoadStore], [trafficStore], 10000);
 
 
 console.log(trafficStore.recs.length); // DEBUGING
@@ -149,4 +188,4 @@ console.log(base.getStoreList().map(function (store) { return store.storeName}))
 
 ///////////////////// REST SERVER /////////////////////
 // Start the server
-//server.start();
+server.start();

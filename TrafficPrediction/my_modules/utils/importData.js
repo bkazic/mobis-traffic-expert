@@ -5,7 +5,7 @@
     
     console.log('Importing data from  %s to %s...', 
         inStores.map(function (store) { return store.name }), 
-        inStores.map(function (store) { return store.name }))
+        outStores.map(function (store) { return store.name }))
     
     // Find and returns first datetime field from store
     getDateTimeFieldName = function (store) {
