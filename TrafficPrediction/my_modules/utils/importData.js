@@ -1,12 +1,15 @@
 ﻿exports.importData = function (inStores, outStores, limit) {
+   
     var loadStores = inStores;
     var targetStores = outStores;
     var count = 0; //counter used for counting iterations when limit is defined
     
+    /*
     console.log('Importing data from  %s to %s...', 
         inStores.map(function (store) { return store.name }), 
         outStores.map(function (store) { return store.name }))
-    
+    */
+
     // Find and returns first datetime field from store
     getDateTimeFieldName = function (store) {
         var dateTimeFieldName = null;
@@ -64,17 +67,22 @@
             } else count++
         }
         
-        //console.log("\nDodal bomo: " + JSON.stringify(loadStores[lowestRecIdx].recs[currRecIdxs[lowestRecIdx]]));
-        
         var rec = loadStores[lowestRecIdx].recs[currRecIdxs[lowestRecIdx]]
-        var val = rec.toJSON(true);
-        delete val.$id;
-        //val.StringDateTime = rec[dateTimeFields[lowestRecIdx]].string; //have to add string version because, string fields can be uniqe. Thisway I delete duplicates.
-        targetStores[lowestRecIdx].add(val);
         
-        //console.log("\nLast resampled rec: " + JSON.stringify(resampledStore.last));
+        // If outStores is "", we have to find appropriate store according to id
+        if (targetStores === "") {
+            id = rec.measuredBy.Name.replace("-", "_");
+            trafficStore = rec.store.base.store("trafficStore_" + id);
+            
+            //console.log("Getting rec with id: " + id + ", Timestamp: " + rec.DateTime.toISOString());
+            //console.log("Saving it to store: " + trafficStore.name);
+
+            trafficStore.add(rec.toJSON(true));
+        } else {
+            targetStores[lowestRecIdx].add(rec.toJSON(true));
+        }
+        
         currRecIdxs[lowestRecIdx]++
-        //console.start()
     }
 }
 

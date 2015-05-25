@@ -1,12 +1,4 @@
-﻿/**
- * Copyright (c) 2015, Jozef Stefan Institute, Quintelligence d.o.o. and contributors
- * All rights reserved.
- * 
- * This source code is licensed under the FreeBSD license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-// Import modules
+﻿// Import modules
 var qm = require('qminer');
 var path = require('path');
 var server = require('./server.js');
@@ -28,7 +20,7 @@ var base = qm.create('qm.conf', 'sensors.def', true); // How can I spec dbPath??
 //qm.delLock();
 //var base = new qm.Base({
 //    mode: 'createClean', 
-//    schema: 'sensors.def',
+//    schemaPath: 'sensors.def',
 //    dbPath: path.join(__dirname, './db')
 //})
 
@@ -42,39 +34,6 @@ var resampledStore = base.store('resampledStore');
 
 
 
-///////////////////// PREPROCESSING FOR TRAFFIC DATA SOURCE /////////////////////
-// Replaces incorect speed values, with avr value
-// TODO
-
-
-//////////////////////////// RESAMPLING MERGED STORE ////////////////////////////
-// This resample aggregator creates new resampled store
-var resampleInterval = 60 * 60 * 1000;
-//qm.newStreamAggr({ //TODO: test if it would work with this?
-trafficStore.addStreamAggr({
-    name: "Resampled", type: "resampler",
-    outStore: resampledStore.name, timestamp: "DateTime",
-    fields: [{ name: "NumOfCars", interpolator: "linear" },
-                { name: "Gap", interpolator: "linear" },
-                { name: "Occupancy", interpolator: "linear" },
-                { name: "Speed", interpolator: "linear" },
-                { name: "TrafficStatus", interpolator: "linear" },
-    ],
-    createStore: false, interval: resampleInterval
-});
-
-// TODO: strange: this part throws errors if executed directly from node
-// Ads a join back, since it was lost with resampler
-resampledStore.addStreamAggr({
-    name: "addJoinsBack",
-    onAdd: function (rec) {
-        rec.addJoin("measuredBy", trafficStore.last.measuredBy)
-    },
-    saveJson: function () { return {} }
-
-    //saveJson: function () { }
-})
-
 // This is used by feature extractor, and updated from MobisModel
 var avrVal = Utils.Helper.newDummyModel();
 
@@ -83,9 +42,6 @@ var modelConf = {
     base: base,
     locAvr: avrVal, // Not sure if this is ok, has to be debuged
     stores: {
-        //"sourceStore": resampledStore,
-        //"predictionStore": Predictions,
-        //"evaluationStore": Evaluation,
         "sourceStore": resampledStore,
         "predictionStore": Predictions,
         "evaluationStore": Evaluation,
@@ -123,7 +79,7 @@ var modelConf = {
     target: resampledStore.field("NumOfCars"),
     
     otherParams: {
- // This are optional parameters
+        // This are optional parameters
         evaluationOffset: 10, // It was 50 before
     },
     
@@ -142,19 +98,45 @@ var modelConf = {
 
 var mobisModel = new Model(modelConf);
 
+
+///////////////////// PREPROCESSING FOR TRAFFIC DATA SOURCE /////////////////////
+// Replaces incorect speed values, with avr value
+// TODO
+
+
+//////////////////////////// RESAMPLING MERGED STORE ////////////////////////////
+// This resample aggregator creates new resampled store
+var resampleInterval = 60 * 60 * 1000;
+//qm.newStreamAggr({ //TODO: test if it would work with this?
+trafficStore.addStreamAggr({
+    name: "Resampled", type: "resampler",
+    outStore: resampledStore.name, timestamp: "DateTime",
+    fields: [{ name: "NumOfCars", interpolator: "linear" },
+                { name: "Gap", interpolator: "linear" },
+                { name: "Occupancy", interpolator: "linear" },
+                { name: "Speed", interpolator: "linear" },
+                { name: "TrafficStatus", interpolator: "linear" },
+    ],
+    createStore: false, interval: resampleInterval
+});
+
+// TODO: strange: this part throws errors if executed directly from node
+// Ads a join back, since it was lost with resampler
+resampledStore.addStreamAggr({
+    name: "addJoinsBack",
+    onAdd: function (rec) {
+        rec.addJoin("measuredBy", trafficStore.last.measuredBy)
+    },
+    saveJson: function () { return {} }
+
+    //saveJson: function () { }
+})
+
+
 //////////////////////////// PREDICTION AND EVALUATION ////////////////////////////
 resampledStore.addStreamAggr({
     name: "analytics",
     onAdd: function (rec) {
-        //console.log("Working on rec: " + rec.DateTime.string);
-        //eval(breakpoint)
-        //if (rec.$id % 100 == 0) {
-        //    console.log("== 100 records down ==");
-        //    eval(breakpoint)
-        //};
-        
-        //var predictions = mobisModel.predict(rec);    
-        //printj(predictions);
         
         mobisModel.predict(rec);
         
@@ -162,7 +144,7 @@ resampledStore.addStreamAggr({
         
         mobisModel.evaluate(rec);
         
-        //mobisModel.consoleReport(rec);
+        mobisModel.consoleReport(rec);
 
     },
     saveJson: function () { return {} }
@@ -177,8 +159,8 @@ qm.load.jsonFile(base.store('trafficLoadStore'), "./sandbox/measurements_0011_11
 //qm.load.jsonFileLimit(base.store('trafficLoadStore'), "./sandbox/measurements_0011_11.txt",1000);
 
 // Simultaing data flow (later this shuld be replaced by imputor)
-Utils.Data.importData([trafficLoadStore], [trafficStore]);
-//Utils.Data.importData([trafficLoadStore], [trafficStore], 10000);
+//Utils.Data.importData([trafficLoadStore], [trafficStore]);
+Utils.Data.importData([trafficLoadStore], [trafficStore], 10000);
 
 
 console.log(trafficStore.recs.length); // DEBUGING
