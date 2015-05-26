@@ -8,33 +8,50 @@ app.use(require('morgan')("combined", { "stream": logger.stream }));
 function init(base) {
     var base = base;
     
-    // Create server with express
+    // Lists all possible costs
     app.get('/', function (req, res) {
-        res.send('hello world');
+        var routerPaths = [];
+        app._router.stack.forEach(function (item) {
+            if (item.route != undefined) {
+                routerPaths.push({ "path": item.route.path,"methods": item.route.methods });
+            }
+        });
+        res.json(routerPaths);
     });
     
-    app.get('/traffic-prediction/get-store-list', function (req, res) {
-        var storeList = base.getStoreList().map(function (store) { return store.storeName })
+    // Returns predictions from all sensors
+    app.get('/traffic-predictions', function (req, res) {
+        var recs = [];
+        base.getStoreList().forEach(function (storeNm) {
+            if (storeNm.storeName.indexOf("resampledStore") != -1) {
+                var store = base.store(storeNm.storeName);
+                if (store.last != null) {
+                    recs.push(store.last.toJSON(true, true))
+                }
+            }
+        });
+        res.json(recs)
+    });
+    
+    // Returns list of all store names
+    app.get('/traffic-predictions/get-store-list', function (req, res) {
+        var storeList = base.getStoreList().map(function (store) { return store.storeName });
         res.send(storeList);
     });
     
-    app.get('/traffic-prediction/get-sensor-ids', function (req, res) {
-        var sensorIdsList = [];
-        base.getStoreList().forEach(function (store) {
-            if (store.storeName.indexOf("resampledStore") != -1) {
-                sensorIdsList.push(store.storeName.slice(-7).replace("_","-"));
-            }
-        });
-        res.json(sensorIdsList);
+    // Returns sensor id stores
+    app.get('/traffic-predictions/get-sensors', function (req, res) {
+        res.json(base.store("CounterNode").recs.toJSON().records);
     });
 
-    app.get('/traffic-prediction/:id', function (req, res) {
+    // Returns predictions for specific sensor
+    app.get('/traffic-predictions/:id', function (req, res) {
         var id = req.params.id;
         id = id.replace("-", "_");
         var store = base.store("resampledStore_" + id);
         
         // Return from function if store with particular sensor id was not found
-        if (store == null) {
+        if (store.last == null) {
             res.status(400).send('Prediction for this sensor ID does not exists');
             return;
         }
