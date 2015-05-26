@@ -131,7 +131,7 @@ Model.prototype.update = function (rec) {
                 //trainRec.Predictions[horizonIdx].Target = targetVal; //TODO: Make a join!!!!!
                 
                 //TODO THIS IS NOT WORKING --> FIX IT!!!
-                //trainRec.Predictions[horizonIdx].addJoin("Target", rec); // THIS IS THE IDEA!!
+                trainRec.Predictions[horizonIdx].addJoin("Target", rec); // THIS IS THE IDEA!!
                 
                 // Select correct linregs model to update
                 var linreg = this.linregs[predictionFieldIdx][horizonIdx][trainWork][trainHour];
