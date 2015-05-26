@@ -11,6 +11,7 @@ var path = require('path');
 ////qm.config('qm.conf', true, 8080, 1024);
 //var base = qm.create('qm.conf', '', true); // How can I spec dbPath??
 
+// Same as above, only a lot more verbose.
 ////// Init data base
 ////qm.delLock();
 ////var base = new qm.Base({

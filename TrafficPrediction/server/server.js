@@ -1,7 +1,9 @@
 ﻿var express = require('express');
 var logger = require("../my_modules/utils/logger/logger.js");
+var bodyParser = require('body-parser');
 var app = express();
 
+app.use(bodyParser.json());
 logger.debug("Overriding 'Express' logger");
 app.use(require('morgan')("combined", { "stream": logger.stream }));
 
@@ -42,6 +44,13 @@ function init(base) {
     // Returns sensor id stores
     app.get('/traffic-predictions/get-sensors', function (req, res) {
         res.json(base.store("CounterNode").recs.toJSON().records);
+    });
+    
+    // Adds sensor measurement
+    app.post('/add', function (req, res) {
+        console.log("Recieved new record: " + JSON.stringify(req.body));
+        res.status(200).send('OK');
+        //TODO - push record to database
     });
 
     // Returns predictions for specific sensor

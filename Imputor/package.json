@@ -1,0 +1,17 @@
+{
+  "name": "Imputor",
+  "version": "0.0.0",
+  "description": "Imputor",
+  "main": "server.js",
+  "author": {
+    "name": "bkazic",
+    "email": ""
+  },
+  "dependencies": {
+    "qminer": "^1.1.4",
+    "request": "^2.55.0"
+  },
+  "devDependencies": {
+    "paktc": "^1.0.1"
+  }
+}
