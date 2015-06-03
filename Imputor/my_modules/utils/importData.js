@@ -97,9 +97,10 @@ exports.importData = function (url, inStores, outStores, limit) {
         
         console.log("Sending data...\n" + JSON.stringify(_data, undefined, 2));
         
+        // If you want to test from Simple REST Client, make sure you add in headers: Content-Type: application/json
         request.post(url, { json: _data }, function (err, res, body) {
             if (err) {
-                console.log("ERROR: ", JSON.stringify(err));
+                console.log("Response: ", JSON.stringify(err));
                 sendData(_data);
                 return; // You do not want to return here with real data?
             }

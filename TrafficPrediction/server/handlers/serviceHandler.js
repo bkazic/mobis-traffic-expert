@@ -7,7 +7,7 @@ function ServiceHandler(base, app) {
 }
 
 // get router paths
-ServiceHandler.prototype.getRouterPaths = function (req, res) {
+ServiceHandler.prototype.handleGetRouterPaths = function (req, res) {
     var routerPaths = [];
     var test = this.app;
     this.app._router.stack.forEach(function (item) {
@@ -19,19 +19,20 @@ ServiceHandler.prototype.getRouterPaths = function (req, res) {
 }
 
 // close Base
-ServiceHandler.prototype.closeBase = function (req, res) {
+ServiceHandler.prototype.handleCloseBase = function (req, res) {
     try {
         this.base.close();
         res.status(200).json({ message: "Base closed" });
     }
-        catch (err) {
+    catch (err) {
         if (typeof err.message != 'undefined' && err.message == "[addon] Exception: Base is closed!") {
-            res.status(400).json({ error: "Base is allready closed" });
-            logger.info("Cannot close Base. Base is allready closed.");
+            res.status(500).json({ error: "Base is allready closed" });
+            logger.warn("Cannot close Base. Base is allready closed.");
         }
         else {
-            res.status(400).json({ error: "Something went wrong when closing Base." });
-            logger.error("Something went wrong when closing Base")
+            res.status(500).json({ error: "Something went wrong when closing Base." });
+            logger.error(err.toString()); // This only returns message
+            logger.debug(err); // Returns entire error mesage, but it will go in console only.
         }
     }
 }

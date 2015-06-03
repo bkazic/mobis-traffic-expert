@@ -61,9 +61,9 @@ var cleanCreateMode = function () {
     //})
 
     trafficPrediction.init(base); //Initiate the traffic prediction workflow
-    trafficPrediction.importData(base, "./sandbox/measurements3sensors3months.txt")
+    //trafficPrediction.importData(base, "./sandbox/measurements3sensors3months.txt")
     
-    base.close();
+    //base.close();
     return base;
 }
 
@@ -99,9 +99,9 @@ var createBase = {
 // TESTED: var base = createBase.openMode(); 
 
 // Only one of bellow can be selected
-//var base = createBase.cleanCreateMode();
+var base = createBase.cleanCreateMode();
 //var base = createBase.openMode();
-var base = createBase.readOnlyMode();
+//var base = createBase.readOnlyMode();
 
 // START SERVER
 server.init(base);
