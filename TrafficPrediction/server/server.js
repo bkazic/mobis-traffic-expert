@@ -34,11 +34,6 @@ function init(base) {
             }
         });
         
-        // SHOULD I DO SOME TRY CATCH IN THIS SERVICESS???
-        // I dont want the whole error to be displayed in the browser.
-        // Also I want to send error to logger.
-        // By the way, would it be possible to write a middleware for logging for qminer?
-
         res.json(recs)
     });
     
@@ -105,8 +100,20 @@ function init(base) {
 
     // Base close call
     app.get('/close-base', function (req, res) {
-        base.close();
-        res.status(200).send('Base closed.');
+        try {
+            base.close();
+            res.status(200).json({ message: "Base closed" });
+        }
+        catch (err) {
+            if (typeof err.message != 'undefined' && err.message == "[addon] Exception: Base is closed!") {
+                res.status(400).json({ error: "Base is allready closed" });
+                logger.info("Cannot close Base. Base is allready closed.");
+            }
+            else {
+                res.status(400).json({ error: "Something went wrong when closing Base." });
+                logger.error("Something went wrong when closing Base")
+            }
+        }
     });
 
 }
