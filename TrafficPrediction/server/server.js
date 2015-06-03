@@ -4,8 +4,9 @@ var bodyParser = require('body-parser');
 var app = express();
 
 app.use(bodyParser.json());
-logger.debug("Overriding 'Express' logger");
 app.use(require('morgan')("combined", { "stream": logger.stream }));
+
+logger.debug("Overriding 'Express' logger");
 
 function init(base) {
     var base = base;
@@ -32,6 +33,12 @@ function init(base) {
                 }
             }
         });
+        
+        // SHOULD I DO SOME TRY CATCH IN THIS SERVICESS???
+        // I dont want the whole error to be displayed in the browser.
+        // Also I want to send error to logger.
+        // By the way, would it be possible to write a middleware for logging for qminer?
+
         res.json(recs)
     });
     
@@ -48,9 +55,38 @@ function init(base) {
     
     // Adds sensor measurement
     app.post('/add', function (req, res) {
-        console.log("Recieved new record: " + JSON.stringify(req.body));
+        var rec = req.body;
+        logger.debug("Recieved new record: " + JSON.stringify(req.body));
+        
+        // Check for empty records.
+        if (Object.keys(rec).length == 0) {
+            logger.warn("Recieved empty record. It will not be stored.");
+            res.status(400).send('Record not stored!')
+            return;
+        }        ;
+        
+        // Check if imputor has reached the end 
+        if (req.body.msg) {
+            logger.debug(req.body.msg);
+            return;
+        }
+        
+        // Find proper store
+        id = rec.measuredBy.Name.replace("-", "_");
+        trafficStore = base.store("trafficStore_" + id);
+        
+        var id = trafficStore.add(rec);
+        
+        // If record was not stored sucesfully, id will be -1
+        if (id == -1) {
+            logger.warn("Record was not stored");
+            res.status(400).send('Record not stored!')
+            return;
+        }
+        
+        logger.debug("Record stored into store %s. Store length: %s ", trafficStore.name, trafficStore.length);
         res.status(200).send('OK');
-        //TODO - push record to database
+
     });
 
     // Returns predictions for specific sensor
@@ -67,14 +103,21 @@ function init(base) {
         res.json(store.last.toJSON(true, true));
     });
 
+    // Base close call
+    app.get('/close-base', function (req, res) {
+        base.close();
+        res.status(200).send('Base closed.');
+    });
+
 }
 
 // Functions that starts the server
 function start(_port) {
     var port = _port || process.env.port || 1337;
     app.listen(port);
-    console.log("Express server listening on port %d in %s mode", port, app.settings.env);
+    console.log("\n[Server] Express server listening on port %d in %s mode", port, app.settings.env);
 }
 
 exports.init = init;
 exports.start = start;
+exports.app = app;

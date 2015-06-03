@@ -63,7 +63,10 @@ exports.importData = function (url, inStores, outStores, limit) {
         try {
             var rec = loadStores[lowestRecIdx].recs[currRecIdxs[lowestRecIdx]]
         } catch (err) {
-            throw "Reached to the end"
+            request.post(url, { json: {msg: "[IMPUTOR] Finished importing data."} })
+            console.log("[IMPUTOR]  Finished importing data.");
+            //throw "Reached to the end"
+            return;
         }
         //var val = rec.toJSON(true);
         
@@ -85,22 +88,22 @@ exports.importData = function (url, inStores, outStores, limit) {
         // If input parameter limit is defined
         if (limit != null) {
             if (count > limit) {
-                console.log("Reached count limit at " + limit);
-                throw "Reached count limit at " + limit
+                console.log("[IMPUTOR] Reached count limit at " + limit);
+                request.post(url, { json: { msg: "[IMPUTOR] Reached count limit at " + limit } })
+                //throw "Reached count limit at " + limit
                 return;
             } else count++
         }
         
-        var data = (_data == null) ? null : JSON.stringify(_data);
         console.log("Sending data...\n" + JSON.stringify(_data, undefined, 2));
-        //debugger;
-
+        
         request.post(url, { json: _data }, function (err, res, body) {
             if (err) {
-                throw new Error(err);
-                sendData();
+                console.log("ERROR: ", JSON.stringify(err));
+                sendData(_data);
+                return; // You do not want to return here with real data?
             }
-
+            
             console.log("Response: " + JSON.stringify(body));
             respCallBack(res);
             
@@ -108,8 +111,7 @@ exports.importData = function (url, inStores, outStores, limit) {
 
         //currRecIdxs[lowestRecIdx]++
     }
-    
-    sendData() //Start the process // I think this can be replaced with ()
+    sendData();
 }
 
 // About this module
