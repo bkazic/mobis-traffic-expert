@@ -111,31 +111,61 @@ TrafficPredictionHandler.prototype.handleAddMeasurement = function (req, res) {
     
     // Check for empty records.
     if (Object.keys(rec).length == 0) {
-        logger.info("Recieved empty record. It will not be stored.");
+        logger.warn("Recieved empty record. It will not be stored.");
         res.status(400).json({ error: "Recieved empty record. It will not be stored." })
-        return;
-    }    
-    
-    // Check if imputor has reached the end 
-    if (req.body.msg) {
-        logger.debug(req.body.msg);
         return;
     }
     
-    // Find proper store
-    id = rec.measuredBy.Name.replace("-", "_");
-    trafficStore = this.base.store("trafficStore_" + id);
+    // Check if imputor has reached the end 
+    if (req.body.message && req.body.message.indexOf("[IMPUTOR]") != -1) {
+        logger.info(req.body.message);
+        return;
+    }
     
-    var id = trafficStore.add(rec);
+    // Extract id
+    try {
+        id = rec.measuredBy.Name.replace("-", "_");
+    }
+    catch (err) {
+        if (typeof err.message != 'undefined' && err.message.indexOf("Cannot read property") != -1) {
+            res.status(500).json({ error: "Record does not include property \"measuredBy\"" });
+            logger.warn("Record does not include property \"measuredBy\", from which the ID of the store can be found.");
+            return;
+        }
+        else {
+            res.status(500).json({ error: "Internal Server Error" });
+            logger.error(err.toString()); // This only returns message
+            logger.debug(err); // Returns entire error mesage, but it will go in console only.
+        }
+    }
+    
+    // Find proper store
+    var storeName = "trafficStore_" + id;
+    trafficStore = this.base.store(storeName);
+    if (trafficStore == null) {
+        logger.warn("Store with name %s was not found. Cannot add record.", storeName);
+        return;
+    }
+    
+    // Try to add record to store
+    try {
+        var id = trafficStore.add(rec);
+    }
+    catch (err) {
+        res.status(500).json({ error: "Internal Server Error" });
+        logger.error(err.toString()); // This only returns message
+        logger.debug(err); // Returns entire error mesage, but it will go in console only.
+    }
     
     // If record was not stored sucesfully, id will be -1
     if (id == -1) {
-        logger.warn("Record was not stored");
+        logger.error("Record was not stored");
         res.status(400).json({ error: 'Record not stored!' })
         return;
     }
     
     logger.debug("Record stored into store %s. Store length: %s ", trafficStore.name, trafficStore.length);
+    logger.info("New record was stored into store %s. Record: %s", trafficStore.name, JSON.stringify(req.body));
     res.status(200).json({message: "OK"});
 }
 

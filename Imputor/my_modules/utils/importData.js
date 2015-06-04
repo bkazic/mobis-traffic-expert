@@ -63,7 +63,7 @@ exports.importData = function (url, inStores, outStores, limit) {
         try {
             var rec = loadStores[lowestRecIdx].recs[currRecIdxs[lowestRecIdx]]
         } catch (err) {
-            request.post(url, { json: {msg: "[IMPUTOR] Finished importing data."} })
+            request.post(url, { json: {message: "[IMPUTOR] Finished importing data."} })
             console.log("[IMPUTOR]  Finished importing data.");
             //throw "Reached to the end"
             return;
@@ -89,7 +89,7 @@ exports.importData = function (url, inStores, outStores, limit) {
         if (limit != null) {
             if (count > limit) {
                 console.log("[IMPUTOR] Reached count limit at " + limit);
-                request.post(url, { json: { msg: "[IMPUTOR] Reached count limit at " + limit } })
+                request.post(url, { json: { message: "[IMPUTOR] Reached count limit at " + limit } })
                 //throw "Reached count limit at " + limit
                 return;
             } else count++
@@ -100,7 +100,7 @@ exports.importData = function (url, inStores, outStores, limit) {
         // If you want to test from Simple REST Client, make sure you add in headers: Content-Type: application/json
         request.post(url, { json: _data }, function (err, res, body) {
             if (err) {
-                console.log("Response: ", JSON.stringify(err));
+                console.error("Response: ", JSON.stringify(err));
                 sendData(_data);
                 return; // You do not want to return here with real data?
             }
