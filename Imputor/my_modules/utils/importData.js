@@ -95,12 +95,13 @@ exports.importData = function (url, inStores, outStores, limit) {
             } else count++
         }
         
-        console.log("Sending data...\n" + JSON.stringify(_data, undefined, 2));
+        console.log("\n[IMPUTOR] Sending data: " + JSON.stringify(_data, undefined, 2));
         
         // If you want to test from Simple REST Client, make sure you add in headers: Content-Type: application/json
         request.post(url, { json: _data }, function (err, res, body) {
             if (err) {
-                console.error("Response: ", JSON.stringify(err));
+                console.error("[Error] Response: ", JSON.stringify(err));
+                console.log("[IMPUTOR] Resending data");
                 sendData(_data);
                 return; // You do not want to return here with real data?
             }

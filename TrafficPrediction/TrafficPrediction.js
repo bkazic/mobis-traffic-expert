@@ -19,7 +19,7 @@ Model = require('./my_modules/utils/mobis-model/model.js')
 
 init = function (base) {
     
-    //////// PREPROCESSING ////////
+    //////// INIT STORES ////////
 
     var CounterNode = Utils.DefineStores.createNodeStore(base);
     var Stores = Utils.DefineStores.createMeasurementStores(base);
