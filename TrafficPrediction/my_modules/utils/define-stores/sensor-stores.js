@@ -43,7 +43,10 @@ createNodeStore = function (base) {
             { "name" : "Stationing", "type" : "float", "null" : true },
             { "name" : "Scope", "type" : "string", "null" : true },
             { "name" : "Source", "type" : "string", "null" : true },
-            { "name" : "Description", "type" : "string", "null" : true }
+            { "name" : "Description", "type" : "string", "null" : true },
+            { "name" : "OsmWayId", "type" : "float", "null" : true },
+            { "name" : "OsmNodeSourceId", "type" : "float", "null" : true },
+            { "name" : "OsmNodeTargetId", "type" : "float", "null" : true }
         ],
         "keys" : [
             { "field" : "Name", "type" : "value" },
