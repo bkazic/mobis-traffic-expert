@@ -21,8 +21,7 @@ function cleanCreateMode() {
         dbPath: path.join(__dirname, './db')
     })
     
-    //qm.load.jsonFile(base.store("CounterNode"), path.join(__dirname, "/sandbox/countersNodes.txt"));
-    qm.load.jsonFile(base.store("CounterNode"), path.join(__dirname, "/sandbox/countersNodesObvoznica.txt"));
+    qm.load.jsonFile(base.store("CounterNode"), path.join(__dirname, "/sandbox/countersNodes.txt"));
     //qm.load.jsonFile(base.store('trafficLoadStore'), path.join(__dirname, "/sandbox/measurements3sensors3months.txt"));
     //qm.load.jsonFile(base.store('trafficLoadStore'), path.join(__dirname, "/sandbox/chunk2measurements3sensors3months.txt"));
     qm.load.jsonFile(base.store('trafficLoadStore'), path.join(__dirname, "/sandbox/measurements_obvoznica.txt"));
