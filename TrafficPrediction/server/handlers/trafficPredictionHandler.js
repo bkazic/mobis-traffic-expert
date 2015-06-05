@@ -119,6 +119,7 @@ TrafficPredictionHandler.prototype.handleAddMeasurement = function (req, res) {
     // Check if imputor has reached the end 
     if (req.body.message && req.body.message.indexOf("[IMPUTOR]") != -1) {
         logger.info(req.body.message);
+        res.status(200).json({ message: "OK" });
         return;
     }
     

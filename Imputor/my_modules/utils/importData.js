@@ -61,10 +61,14 @@ exports.importData = function (url, inStores, outStores, limit) {
     var respCallBack = function (resp) {
         var lowestRecIdx = findLowestRecIdx(currRecIdxs);
         try {
-            var rec = loadStores[lowestRecIdx].recs[currRecIdxs[lowestRecIdx]]
-        } catch (err) {
-            request.post(url, { json: {message: "[IMPUTOR] Finished importing data."} })
-            console.log("[IMPUTOR]  Finished importing data.");
+        var rec = loadStores[lowestRecIdx].recs[currRecIdxs[lowestRecIdx]]
+        } 
+        catch (err) {
+            request.post(url, { json: { message: "[IMPUTOR] Finished importing data." } }, function (err, res, body) {
+                console.log("\n[IMPUTOR] Finished importing data.");
+                console.log("Response: " + JSON.stringify(body));
+            });
+            //console.log("[IMPUTOR]  Finished importing data.");
             //throw "Reached to the end"
             return;
         }

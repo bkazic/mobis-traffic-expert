@@ -58,7 +58,8 @@ createNodeStore = function (base) {
     //qm.load.jsonFile(base.store('CounterNode'), path.join(__dirname , '../../../sandbox/countersNodes.txt'));
     
     // Load short version (only 5 nodes)
-    qm.load.jsonFile(base.store('CounterNode'), path.join(__dirname , './countersNodes.txt'));
+    //qm.load.jsonFile(base.store('CounterNode'), path.join(__dirname , './countersNodes.txt'));
+    qm.load.jsonFile(base.store('CounterNode'), path.join(__dirname , '../../../sandbox/countersNodesObvoznica.txt'));
 
     return base.store("CounterNode")
 }

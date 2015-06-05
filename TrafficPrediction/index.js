@@ -1,9 +1,10 @@
-﻿// IMPORTS
-var qm = require('qminer');
+﻿var qm = require('qminer');
 qm.delLock(); // lock has to be deleted before the new module import
 var trafficPrediction = require('./TrafficPrediction.js');
 var server = require('./server/server.js');
 var path = require('path');
+var config = require('./config-debug.js');
+//var config = require('./config-release.js');
 
 
 // create Base in CLEAN CREATE mode
@@ -26,6 +27,7 @@ function cleanCreateMode() {
     ////trafficPrediction.importData(base, "./sandbox/measurements_9_sens_3_mon.txt")
     //trafficPrediction.importData(base, "./sandbox/measurements3sensors3months.txt")
     //trafficPrediction.importData(base, "./sandbox/chunk1measurements3sensors3months.txt") // Small chuck of previous (from march on).
+    //trafficPrediction.importData(base, "./sandbox/measurements_obvoznica.txt")
     
 
     //base.close();
@@ -66,5 +68,5 @@ var base = createBase.cleanCreateMode();
 
 // START SERVER
 server.init(base);
-server.start();
+server.start(config.trafficPredictionService.server.port);
 
