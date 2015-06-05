@@ -130,7 +130,7 @@ TrafficPredictionHandler.prototype.handleAddMeasurement = function (req, res) {
     catch (err) {
         if (typeof err.message != 'undefined' && err.message.indexOf("Cannot read property") != -1) {
             res.status(500).json({ error: "Record does not include property \"measuredBy\"" });
-            logger.warn("Record does not include property \"measuredBy\", from which the ID of the store can be found.");
+            logger.error("Record does not include property \"measuredBy\", from which the ID of the store can be found.");
             return;
         }
         else {
