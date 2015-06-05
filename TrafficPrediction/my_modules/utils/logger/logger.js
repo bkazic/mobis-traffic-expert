@@ -1,5 +1,12 @@
 ﻿var winston = require('winston');
 var path = require('path');
+var fs = require('fs');
+
+// Check if logs folder exists. If not, create it.
+var dir = './server/logs';
+if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir);
+}
 
 //REF: http://tostring.it/2014/06/23/advanced-logging-with-nodejs/
 
