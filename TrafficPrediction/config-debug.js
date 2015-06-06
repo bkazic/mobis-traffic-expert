@@ -3,6 +3,10 @@
         "server": {
             "port": 1337
         }
+    },
+    "admins": {
+        "foo": { password: "bar" },
+        "admin": { password: "admin" }
     }
 }
 

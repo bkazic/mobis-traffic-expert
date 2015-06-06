@@ -1,12 +1,14 @@
 ﻿// I had to use bind in the bellow functions.
 // Ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind
 
+var auth = require('./auth.js');
+
 function setup(app, handlers) {
-    
+
     // http://mustang.ijs.si:9570/
     app.get('/', handlers.service.handleGetRouterPaths.bind(handlers.service));
     // http://mustang.ijs.si:9570/close-base
-    app.get('/close-base', handlers.service.handleCloseBase.bind(handlers.service));
+    app.get('/close-base', auth, handlers.service.handleCloseBase.bind(handlers.service));
     
     // http://mustang.ijs.si:9570/traffic-predictions/get-store-list
     app.get('/traffic-predictions/get-store-list', handlers.trafficPrediction.handleGetStoreList.bind(handlers.trafficPrediction));
