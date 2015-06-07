@@ -25,7 +25,8 @@ function cleanCreateMode() {
     //qm.load.jsonFile(base.store('trafficLoadStore'), path.join(__dirname, "/sandbox/measurements3sensors3months.txt"));
     //qm.load.jsonFile(base.store('trafficLoadStore'), path.join(__dirname, "/sandbox/chunk2measurements3sensors3months.txt"));
     qm.load.jsonFile(base.store('trafficLoadStore'), path.join(__dirname, "/sandbox/measurements_obvoznica.txt"));
-    //qm.load.jsonFile(base.store('trafficLoadStore'), path.join(__dirname, "/sandbox/measurements_obvoznica_test.txt"));
+    //qm.load.jsonFile(base.store('trafficLoadStore'), path.join(__dirname, "/sandbox/measurements_obvoznica_first_month.txt"));
+    //qm.load.jsonFile(base.store('trafficLoadStore'), path.join(__dirname, "/sandbox/measurements_obvoznica_last_month.txt"));
     
     //base.close();
     return base;

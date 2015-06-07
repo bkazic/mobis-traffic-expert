@@ -20,8 +20,7 @@ TrafficPredictionHandler.prototype.handleGetStoreList = function (req, res) {
         }
         else {
             res.status(500).json({ error: "Internal Server Error" });
-            logger.error(err.toString()); // This only returns message
-            logger.debug(err); // Returns entire error mesage, but it will go in console only.
+            logger.error(err.stack); 
         }
     }
 }
@@ -39,8 +38,7 @@ TrafficPredictionHandler.prototype.handleGetSensors = function (req, res) {
         }
         else {
             res.status(500).json({ error: "Internal Server Error" });
-            logger.error(err.toString()); // This only returns message
-            logger.debug(err); // Returns entire error mesage, but it will go in console only.
+            logger.error(err.stack); 
         }
     }
 }
@@ -68,8 +66,7 @@ TrafficPredictionHandler.prototype.handleGetTrafficPredictions = function (req, 
         }
         else {
             res.status(500).json({ error: "Internal Server Error" });
-            logger.error(err.toString()); // This only returns message
-            logger.debug(err); // Returns entire error mesage, but it will go in console only.
+            logger.error(err.stack);
         }
     }
 }
@@ -97,8 +94,7 @@ TrafficPredictionHandler.prototype.handleGetTrafficPredictionsById = function (r
         }
         else {
             res.status(500).json({ error: "Internal Server Error" });
-            logger.error(err.toString()); // This only returns message
-            logger.debug(err); // Returns entire error mesage, but it will go in console only.
+            logger.error(err.stack);
         }
     }
 }
@@ -135,8 +131,7 @@ TrafficPredictionHandler.prototype.handleAddMeasurement = function (req, res) {
         }
         else {
             res.status(500).json({ error: "Internal Server Error" });
-            logger.error(err.toString()); // This only returns message
-            logger.debug(err); // Returns entire error mesage, but it will go in console only.
+            logger.error(err.stack);
         }
     }
     
@@ -154,8 +149,7 @@ TrafficPredictionHandler.prototype.handleAddMeasurement = function (req, res) {
     }
     catch (err) {
         res.status(500).json({ error: "Internal Server Error" });
-        logger.error(err.toString()); // This only returns message
-        logger.debug(err); // Returns entire error mesage, but it will go in console only.
+        logger.error(err.stack);
     }
     
     // If record was not stored sucesfully, id will be -1

@@ -31,8 +31,7 @@ ServiceHandler.prototype.handleCloseBase = function (req, res) {
         }
         else {
             res.status(500).json({ error: "Something went wrong when closing Base." });
-            logger.error(err.toString()); // This only returns message
-            logger.debug(err); // Returns entire error mesage, but it will go in console only.
+            logger.error(err.stack);
         }
     }
 }
