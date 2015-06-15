@@ -1,6 +1,7 @@
 ﻿var winston = require('winston');
 var path = require('path');
 var fs = require('fs');
+var config = require('../../../config.js');
 
 // Check if logs folder exists. If not, create it.
 var dir = './server/logs';
@@ -13,7 +14,6 @@ if (!fs.existsSync(dir)) {
 winston.emitErrs = true;
 var logger = new winston.Logger({
     transports: [
-        //new winston.transports.File({
         new winston.transports.DailyRotateFile({
             name: 'file.all',
             level: 'info', 
@@ -26,7 +26,6 @@ var logger = new winston.Logger({
             maxFiles: 5,
             colorize: false
         }),
-        //new winston.transports.File({
         new winston.transports.DailyRotateFile({
             name:'file.error',
             level: 'error', 
@@ -39,8 +38,9 @@ var logger = new winston.Logger({
             colorize: false
         }),
         new winston.transports.Console({
-            //level: 'debug',
-            level: 'error',
+            //level: 'debug', // Delete this later if everything is ok
+            //level: 'error', // Delete this later if everything is ok
+            level: config.logger.console.level,
             handleExceptions: true,
             json: false,
             colorize: true

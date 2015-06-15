@@ -1,8 +1,10 @@
 ﻿var basicAuth = require('basic-auth');
-var config = require('../config-debug.js');
+var config = require('../config.js');
+var logger = require("../my_modules/utils/logger/logger.js");
 
 var auth = function (req, res, next) {
     function unauthorized(res) {
+        logger.warn("Unauthorized request: %s %s!", req.method, req.url)
         res.set('WWW-Authenticate', 'Basic realm=Authorization Required');
         return res.status(401).sendStatus(401);
     };

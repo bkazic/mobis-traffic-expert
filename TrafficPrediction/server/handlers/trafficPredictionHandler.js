@@ -104,18 +104,18 @@ TrafficPredictionHandler.prototype.handleAddMeasurement = function (req, res) {
     // If you want to test from Simple REST Client, make sure you add in headers: Content-Type: application/json
     var rec = req.body;
     logger.debug("Recieved new record: " + JSON.stringify(req.body));
-    
+
     // Check for empty records.
     if (Object.keys(rec).length == 0) {
         logger.warn("Recieved empty record. It will not be stored.");
-        res.status(400).json({ error: "Recieved empty record. It will not be stored." })
+        res.status(400).json({ error: "Recieved empty record. It will not be stored." }).end();
         return;
     }
     
     // Check if imputor has reached the end 
     if (req.body.message && req.body.message.indexOf("[IMPUTOR]") != -1) {
         logger.info(req.body.message);
-        res.status(200).json({ message: "OK" });
+        res.status(200).json({ message: "OK" }).end();
         return;
     }
     
@@ -125,12 +125,12 @@ TrafficPredictionHandler.prototype.handleAddMeasurement = function (req, res) {
     }
     catch (err) {
         if (typeof err.message != 'undefined' && err.message.indexOf("Cannot read property") != -1) {
-            res.status(500).json({ error: "Record does not include property \"measuredBy\"" });
+            res.status(500).json({ error: "Record does not include property \"measuredBy\"" }).end();
             logger.error("Record does not include property \"measuredBy\", from which the ID of the store can be found.");
             return;
         }
         else {
-            res.status(500).json({ error: "Internal Server Error" });
+            res.status(500).json({ error: "Internal Server Error" }).end();
             logger.error(err.stack);
         }
     }
@@ -140,6 +140,7 @@ TrafficPredictionHandler.prototype.handleAddMeasurement = function (req, res) {
     trafficStore = this.base.store(storeName);
     if (trafficStore == null) {
         logger.warn("Store with name %s was not found. Cannot add record.", storeName);
+        res.status(500).json({error: "Store with name " + storeName + " was not found. Cannot add record."}).end();
         return;
     }
     
@@ -148,20 +149,20 @@ TrafficPredictionHandler.prototype.handleAddMeasurement = function (req, res) {
         var id = trafficStore.add(rec);
     }
     catch (err) {
-        res.status(500).json({ error: "Internal Server Error" });
+        res.status(500).json({ error: "Internal Server Error" }).end();
         logger.error(err.stack);
     }
     
     // If record was not stored sucesfully, id will be -1
     if (id == -1) {
         logger.error("Record was not stored");
-        res.status(400).json({ error: 'Record not stored!' })
+        res.status(400).json({ error: 'Record not stored!' }).end()
         return;
     }
     
     logger.debug("Record stored into store %s. Store length: %s ", trafficStore.name, trafficStore.length);
     logger.info("New record was stored into store %s. Record: %s", trafficStore.name, JSON.stringify(req.body));
-    res.status(200).json({message: "OK"});
+    res.status(200).json({message: "OK"}).end();
 }
 
 module.exports = TrafficPredictionHandler;

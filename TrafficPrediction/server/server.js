@@ -7,6 +7,7 @@ var TrafficPredictionHandler = require('./handlers/trafficPredictionHandler.js')
 var app = express();
 
 app.use(bodyParser.json());
+
 app.use(require('morgan')("combined", { "stream": logger.stream }));
 
 logger.debug("Overriding 'Express' logger");
