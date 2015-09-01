@@ -125,7 +125,11 @@ function generateDateTime(dateString, timeString) {
     var tzoffset = (new Date()).getTimezoneOffset() * 60000; // Ugly Hack
     var date = new Date(date - tzoffset) // Ugly Hack
     
-    return date.toISOString().slice(0, -5); // Slice removes ".000Z" which represents Zulu timezone
+    try {
+        return date.toISOString().slice(0, -5); // Slice removes ".000Z" which represents Zulu timezone
+    } catch (e) { 
+        logger.error(e.stack)
+    }
 }
 
 // Check if this field exists. If not, throw error.
