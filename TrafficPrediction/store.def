@@ -1,0 +1,18 @@
+﻿[
+	{
+	"name": "rawStore",
+	"fields": [
+		{ "name": "DateTime", "type": "datetime", "primary": true },
+		{ "name": "TravelTime", "type": "float", "null": true },
+		{ "name": "AverageSpeed", "type": "float", "null": true }
+		]
+   	},
+	{
+	"name": "resampledStore",
+	"fields": [
+		{ "name": "DateTime", "type": "datetime", "primary": true },
+		{ "name": "TravelTime", "type": "float", "null": true },
+		{ "name": "AverageSpeed", "type": "float", "null": true }
+		]
+   	}
+]
