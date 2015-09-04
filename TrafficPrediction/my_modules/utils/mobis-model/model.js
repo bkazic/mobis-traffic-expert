@@ -227,7 +227,6 @@ Model.prototype.consoleReport = function (rec) {
         console.log("\n=====================================\n=== REC: %s ===\n=====================================",
         rec.DateTime);
     }
-
     
     for (horizonIdx in this.horizons) {
         
@@ -244,7 +243,7 @@ Model.prototype.consoleReport = function (rec) {
         
         // Report current predictions in the console
         console.log("\n=== Predictions ===\n");
-        console.log("Predictions for Sensor ID: " + rec.measuredBy.Name);
+        console.log("Predictions for Sensor ID: " + rec.Origin);
         console.log("Update count: " + trainRec.Predictions[horizonIdx].UpdateCount + "\n")
         console.log("Working on rec: " + rec.DateTime.toISOString());
         console.log("Prediction from: " + trainRec.Predictions[horizonIdx].OriginalTime.toISOString()); // Same as trainRec.DateTime.string             
@@ -268,7 +267,6 @@ Model.prototype.consoleReport = function (rec) {
                 console.log("\t" + predFieldNm + ": " + errorValue);
             });
         };
-        
     }
      
 }

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "TrafficExpert", "TrafficPrediction\TrafficPredictionWithNode.njsproj", "{FFB21331-F495-44F3-A629-898521BD96AF}"
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "TrafficPredictionWithNode", "TrafficPrediction\TrafficPredictionWithNode.njsproj", "{FFB21331-F495-44F3-A629-898521BD96AF}"
 EndProject
 Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "Imputor", "Imputor\Imputor.njsproj", "{B0FBA9D7-44B5-4708-9219-8914FEB3D59D}"
 EndProject

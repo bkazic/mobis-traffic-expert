@@ -95,7 +95,6 @@ var modelConf = {
     ]
 }
 
-
 var mobisModel = new Model(modelConf);
 
 
