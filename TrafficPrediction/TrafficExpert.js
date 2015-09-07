@@ -3,6 +3,7 @@ var qm = require('qminer');
 var path = require('path');
 var server = require('./server/server.js');
 var evaluation = require('./my_modules/utils/online-evaluation/evaluation.js')
+var InfoTrip = require('./InfoTrip/services.js')
 
 // Import my modules
 Utils = {};
@@ -14,7 +15,7 @@ Model = require('./my_modules/utils/mobis-model/model.js');
 //// Define stores
 // create base for the store
 var base = qm.create('qm.conf', 'store.def', true); 
-//This is to verbose
+//This is too verbose
 //var base = new qm.Base({
 //    mode: 'createClean', 
 //    //schemaPath: path.join(__dirname, './store.def'), // its more robust but, doesen't work from the console
@@ -113,6 +114,17 @@ resampledStore.addStreamAggr({
     saveJson: function () { return {} }
 });
 
+
+//////////////////////////// SEND LATEST PREDICTION ////////////////////////////
+predictionStore.addStreamAggr({
+    name: "predictions",
+    onAdd: function (rec) {
+        // TODO: send prediction to InfoTrip server
+        // Example: InfoTrip.updatePathData(rec, callback)
+        InfoTrip.updatePathData(rec)
+    },
+    saveJson: function () { return {} }
+})
 
 
 ///////////////////// LOADING DATA: SIMULATING DATA FLOW /////////////////////
