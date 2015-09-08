@@ -9,7 +9,7 @@ function test() {
 
 function updatePathData(rec) { 
     // TODO
-    logger.debug("\nSending data: " + JSON.stringify(rec));
+    logger.info("Sending data: " + JSON.stringify(rec)); console.log()
 }
 
 exports.test = test;

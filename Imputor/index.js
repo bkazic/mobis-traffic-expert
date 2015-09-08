@@ -17,17 +17,12 @@ function cleanCreateMode() {
     //qm.delLock();
     var base = new qm.Base({
         mode: 'createClean', 
-        schemaPath: path.join(__dirname, './sensors.def'),
+        schemaPath: path.join(__dirname, './store.def'),
         dbPath: path.join(__dirname, './db')
     })
     
-    qm.load.jsonFile(base.store("CounterNode"), path.join(__dirname, "/sandbox/countersNodes.txt"));
-    //qm.load.jsonFile(base.store('trafficLoadStore'), path.join(__dirname, "/sandbox/measurements3sensors3months.txt"));
-    //qm.load.jsonFile(base.store('trafficLoadStore'), path.join(__dirname, "/sandbox/chunk2measurements3sensors3months.txt"));
-    qm.load.jsonFile(base.store('trafficLoadStore'), path.join(__dirname, "/sandbox/measurements_obvoznica.txt"));
-    //qm.load.jsonFile(base.store('trafficLoadStore'), path.join(__dirname, "/sandbox/measurements_obvoznica_first_month.txt"));
-    //qm.load.jsonFile(base.store('trafficLoadStore'), path.join(__dirname, "/sandbox/measurements_obvoznica_last_month.txt"));
-    
+    qm.load.jsonFile(base.store("data"), path.join(__dirname, "/sandbox/data.json"));
+  
     //base.close();
     return base;
 }
@@ -55,5 +50,5 @@ var base = createBase.cleanCreateMode();
 
 // Start importing records
 var url = config.trafficPredictionService.root + "/traffic-predictions/add";
-Utils.importData(url, [base.store('trafficLoadStore')], [base.store('trafficStore')])
+Utils.importData(url, [base.store('data')], [base.store('data')],100)
 

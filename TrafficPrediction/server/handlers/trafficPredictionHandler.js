@@ -7,25 +7,6 @@ var TrafficPredictionHandler = function (_base) {
 }
 
 
-// Returns list of all store names
-TrafficPredictionHandler.prototype.handleGetStoreList = function (req, res) {
-    try {
-        var storeList = this.base.getStoreList().map(function (store) { return store.storeName });
-        res.status(200).json(storeList);
-    }
-    catch (err) {
-        if (typeof err.message != 'undefined' && err.message == "[addon] Exception: Base is closed!") {
-            res.status(500).json({ error: "Base is closed!" });
-            logger.warn("Cannot execute. Base is closed!");
-        }
-        else {
-            res.status(500).json({ error: "Internal Server Error" });
-            logger.error(err.stack); 
-        }
-    }
-}
-
-
 // Returns sensor id stores
 TrafficPredictionHandler.prototype.handleGetSensors = function (req, res) {
     try {
@@ -90,7 +71,7 @@ TrafficPredictionHandler.prototype.handleGetTrafficPredictionsById = function (r
     catch (err) {
         if (typeof err.message != 'undefined' && err.message == "[addon] Exception: Base is closed!") {
             res.status(500).json({ error: "Base is closed!" });
-            logger.warn("Cannot execute. Base is closed!");
+            logger.warn("Cannot execute. Base is closed!"); console.log();
         }
         else {
             res.status(500).json({ error: "Internal Server Error" });
@@ -103,11 +84,11 @@ TrafficPredictionHandler.prototype.handleGetTrafficPredictionsById = function (r
 TrafficPredictionHandler.prototype.handleAddMeasurement = function (req, res) {
     // If you want to test from Simple REST Client, make sure you add in headers: Content-Type: application/json
     var rec = req.body;
-    logger.debug("Recieved new record: " + JSON.stringify(req.body));
+    logger.debug("Recieved new record: " + JSON.stringify(req.body)); console.log();
 
     // Check for empty records.
     if (Object.keys(rec).length == 0) {
-        logger.warn("Recieved empty record. It will not be stored.");
+        logger.warn("Recieved empty record. It will not be stored."); console.log();
         res.status(400).json({ error: "Recieved empty record. It will not be stored." }).end();
         return;
     }
@@ -119,6 +100,7 @@ TrafficPredictionHandler.prototype.handleAddMeasurement = function (req, res) {
         return;
     }
     
+    /*
     // Extract id
     try {
         id = rec.measuredBy.Name.replace("-", "_");
@@ -134,12 +116,13 @@ TrafficPredictionHandler.prototype.handleAddMeasurement = function (req, res) {
             logger.error(err.stack);
         }
     }
+    */
     
     // Find proper store
-    var storeName = "trafficStore_" + id;
+    var storeName = "rawStore";
     trafficStore = this.base.store(storeName);
     if (trafficStore == null) {
-        logger.warn("Store with name %s was not found. Cannot add record.", storeName);
+        logger.warn("Store with name %s was not found. Cannot add record.", storeName); console.log()
         res.status(500).json({error: "Store with name " + storeName + " was not found. Cannot add record."}).end();
         return;
     }
@@ -150,18 +133,18 @@ TrafficPredictionHandler.prototype.handleAddMeasurement = function (req, res) {
     }
     catch (err) {
         res.status(500).json({ error: "Internal Server Error" }).end();
-        logger.error(err.stack);
+        logger.error(err.stack); console.log();
     }
     
     // If record was not stored sucesfully, id will be -1
     if (id == -1) {
-        logger.error("Record was not stored");
+        logger.error("Record was not stored"); console.log();
         res.status(400).json({ error: 'Record not stored!' }).end()
         return;
     }
     
-    logger.debug("Record stored into store %s. Store length: %s ", trafficStore.name, trafficStore.length);
-    logger.info("New record was stored into store %s. Record: %s", trafficStore.name, JSON.stringify(req.body));
+    logger.debug("Record stored into store %s. Store length: %s ", trafficStore.name, trafficStore.length); console.log();
+    logger.info("New record was stored into store %s. Record: %s", trafficStore.name, JSON.stringify(req.body)); console.log();
     res.status(200).json({message: "OK"}).end();
 }
 

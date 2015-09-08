@@ -26,6 +26,7 @@
 	{
 	"name": "evaluationStore",
 	"fields": [
+	    { "name": "Name", "type": "string", "null": true },
 		{ "name": "TravelTime", "type": "float", "null": true },
 		{ "name": "AverageSpeed", "type": "float", "null": true }
 		//{ "name": "Origin", "type": "float", "null": true }

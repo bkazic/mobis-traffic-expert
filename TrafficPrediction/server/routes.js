@@ -8,10 +8,13 @@ function setup(app, handlers) {
     // http://mustang.ijs.si:9570/
     app.get('/', handlers.service.handleGetRouterPaths.bind(handlers.service));
     // http://mustang.ijs.si:9570/close-base
-    app.get('/close-base', auth, handlers.service.handleCloseBase.bind(handlers.service));
+    app.get('/close-base', auth, handlers.service.handleCloseBase.bind(handlers.service));    
     
-    // http://mustang.ijs.si:9570/traffic-predictions/get-store-list
-    app.get('/traffic-predictions/get-store-list', handlers.trafficPrediction.handleGetStoreList.bind(handlers.trafficPrediction));
+    // http://mustang.ijs.si:9570/get-store-list
+    app.get('/get-store-list', auth, handlers.service.handleGetStoreList.bind(handlers.service));
+    // http://mustang.ijs.si:9570/get-store-recs/predictionStores
+    app.get('/get-store-recs/:store', auth, handlers.service.handleGetStoreRecs.bind(handlers.service));
+    
     // http://mustang.ijs.si:9570/traffic-predictions/get-sensors
     app.get('/traffic-predictions/get-sensors', handlers.trafficPrediction.handleGetSensors.bind(handlers.trafficPrediction));
     

@@ -76,7 +76,7 @@ exports.importData = function (url, inStores, outStores, limit) {
         
         var val = rec.toJSON();
         delete val.$id;
-        val["measuredBy"] = { "Name": rec.measuredBy.Name };
+        //val["measuredBy"] = { "Name": rec.measuredBy.Name };
         
         //console.log("Response: " + JSON.stringify(resp));
         

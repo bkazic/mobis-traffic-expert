@@ -129,13 +129,15 @@ predictionStore.addStreamAggr({
 
 ///////////////////// LOADING DATA: SIMULATING DATA FLOW /////////////////////
 // load rawStore from file
+/*
 qm.load.jsonFile(rawStore, "./sandbox/data.json");
+qm.load.jsonFile(rawStore, "./sandbox/data.json", 100);
 
 console.log(rawStore.recs.length); // DEBUGING
 console.log(resampledStore.recs.length); // DEBUGING
 
 console.log(base.getStoreList().map(function (store) { return store.storeName}))
-
+*/
 ///////////////////// REST SERVER /////////////////////
 // Start the server
 server.init(base);
