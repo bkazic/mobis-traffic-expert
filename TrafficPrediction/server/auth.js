@@ -1,5 +1,6 @@
 ﻿var basicAuth = require('basic-auth');
-var config = require('../config.js');
+var env = process.env.NODE_ENV || 'development';
+var config = require('../config.json')[env];
 var logger = require("../my_modules/utils/logger/logger.js");
 
 var auth = function (req, res, next) {

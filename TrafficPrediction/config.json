@@ -1,0 +1,27 @@
+﻿{
+    "development": {
+        "trafficPredictionService": {
+            "server": {
+                "port": 1337
+            }
+        },
+        "admins": {
+            "foo": { "password": "bar" },
+            "admin": { "password": "admin" }
+        },
+        "logger": {
+            "console": { "level": "info" }
+        }
+    },
+    
+    "production": {
+        "trafficPredictionService": {
+            "server": {
+                "port": 9570
+            }
+        }, 
+        "logger": {
+            "console": { "level": "debug" }
+        }
+    }
+}

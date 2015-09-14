@@ -12,7 +12,7 @@ function setup(app, handlers) {
     
     // http://mustang.ijs.si:9570/get-store-list
     app.get('/get-store-list', auth, handlers.service.handleGetStoreList.bind(handlers.service));
-    // http://mustang.ijs.si:9570/get-store-recs/predictionStores
+    // http://mustang.ijs.si:9570/get-store-recs/predictionStores?limit=20 // limit is optional param to limit the size of output
     app.get('/get-store-recs/:store', auth, handlers.service.handleGetStoreRecs.bind(handlers.service));
     
     // http://mustang.ijs.si:9570/traffic-predictions/get-sensors

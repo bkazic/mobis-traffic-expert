@@ -1,7 +1,8 @@
 ﻿var winston = require('winston');
 var path = require('path');
 var fs = require('fs');
-var config = require('../../../config.js');
+var env = process.env.NODE_ENV || 'development';
+var config = require('../../../config.json')[env];
 
 // Check if logs folder exists. If not, create it.
 var dir = './server/logs';

@@ -1,11 +1,14 @@
 {
   "name": "TrafficPrediction",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "TrafficPrediction",
   "main": "server.js",
   "author": {
     "name": "bkazic",
     "email": ""
+  },
+    "scripts": {
+      "start": "set NODE_ENV=development&& node TrafficExpert.js"
   },
   "dependencies": {
     "basic-auth": "^1.0.1",

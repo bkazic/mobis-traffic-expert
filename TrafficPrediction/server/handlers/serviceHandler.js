@@ -57,7 +57,8 @@ ServiceHandler.prototype.handleGetStoreList = function (req, res) {
 
 ServiceHandler.prototype.handleGetStoreRecs = function (req, res) {
     var storeName = req.params.store; // TODO: try cath
-    var limit = 10;
+    var limit = (typeof req.query.limit === 'undefined') ? 10 : parseInt(req.query.limit);
+    //var limit = 10;
     var recs = [];
 
     try {
@@ -71,7 +72,7 @@ ServiceHandler.prototype.handleGetStoreRecs = function (req, res) {
         
         var offset = thisStore.length - limit;
         offset = (offset > 0) ? offset : 0   // in case offset is negative, set it to 0. Otherwise program crashes.
-        var recs = thisStore.recs.trunc(limit, offset).reverse().toJSON();
+        var recs = thisStore.recs.trunc(limit, offset).reverse().toJSON(true,true);
         
         // check if any record was found
         if (recs['$hits'] === 0) {

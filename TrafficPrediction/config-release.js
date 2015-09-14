@@ -1,4 +1,6 @@
-﻿var config = {
+﻿// DEPRICATED
+
+var config = {
     "trafficPredictionService": {
         "server": {
             "port": 9570

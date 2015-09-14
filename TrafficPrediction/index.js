@@ -3,7 +3,9 @@ qm.delLock(); // lock has to be deleted before the new module import
 var trafficPrediction = require('./TrafficPrediction.js');
 var server = require('./server/server.js');
 var path = require('path');
-var config = require('./config.js');
+var env = process.env.NODE_ENV || 'development';
+//var config = require('./config.js')[env];
+var config = require('./config.json')[env];
 //var config = require('./config-release.js');
 
 
