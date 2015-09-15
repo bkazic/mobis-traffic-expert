@@ -147,6 +147,6 @@ server.start(config.trafficPredictionService.server.port);
 
 // Ways to start service:
 // --> "node TrafficExpert.js" - starts the script
-// --> "set NODE_ENV=development&& node TrafficExpert.js" - starts the script in devel mode
+// --> "set NODE_ENV=development&& node TrafficExpert.js" - starts the script in development mode
 // --> "set NODE_ENV=preoduction&& node TrafficExpert.js" - starts the script in production mode
 // --> "npm start" - starts the script wiht NODE_ENV defined in package.json 
