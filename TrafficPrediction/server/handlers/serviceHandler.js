@@ -72,7 +72,7 @@ ServiceHandler.prototype.handleGetStoreRecs = function (req, res) {
         
         var offset = thisStore.length - limit;
         offset = (offset > 0) ? offset : 0   // in case offset is negative, set it to 0. Otherwise program crashes.
-        var recs = thisStore.recs.trunc(limit, offset).reverse().toJSON(true,true);
+        var recs = thisStore.allRecords.trunc(limit, offset).reverse().toJSON(true,true);
         
         // check if any record was found
         if (recs['$hits'] === 0) {

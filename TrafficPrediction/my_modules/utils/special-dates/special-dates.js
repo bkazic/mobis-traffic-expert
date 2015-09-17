@@ -1,7 +1,7 @@
 ﻿var qm = require('qminer');
 var path = require('path');
 
-// CLEAN AND CREATE
+//// CLEAN AND CREATE
 //var base = new qm.Base({
 //    mode: 'createClean',
 //    schema: [{
@@ -20,7 +20,8 @@ var path = require('path');
 //qm.load.jsonFile(base.store("specialDates"), path.join(__dirname , '/specialDates.txt'))
 //base.close()
 
-//// READ ONLY
+
+// READ ONLY
 var base = new qm.Base({
     mode: 'openReadOnly',
     schema: [{
@@ -36,6 +37,7 @@ var base = new qm.Base({
         }],
     dbPath: path.join(__dirname, './db') 
 });
+
 
 // Constructor
 var SpecialDates = function (key, store) {

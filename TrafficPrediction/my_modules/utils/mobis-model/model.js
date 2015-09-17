@@ -118,7 +118,7 @@ Model.prototype.update = function (rec) {
         for (var horizonIdx in this.horizons) {
             // Get rec for training
             //var trainRecId = rec.$store.getStreamAggr(RecordBuffers[horizonIdx].name).val.oldest.$id; //OLD
-            var trainRecId = rec.store.getStreamAggr(RecordBuffers[horizonIdx].name).val.oldest.$id;
+            var trainRecId = rec.$store.getStreamAggr(RecordBuffers[horizonIdx].name).val.oldest.$id;
             
             if (trainRecId > 0) {
                 
@@ -130,15 +130,18 @@ Model.prototype.update = function (rec) {
                 var targetVal = rec[predictionFieldName];
                 //trainRec.Predictions[horizonIdx].Target = targetVal; //TODO: Make a join!!!!!
                 
-                //TODO THIS IS NOT WORKING --> FIX IT!!!
-                trainRec.Predictions[horizonIdx].addJoin("Target", rec); // THIS IS THE IDEA!!
+                try {
+                    trainRec.Predictions[horizonIdx].$addJoin("Target", rec); 
+                } catch (err) { 
+                    console.log(err + ". Use model.predict(rec) first!")
+                }
                 
                 // Select correct linregs model to update
                 var linreg = this.linregs[predictionFieldIdx][horizonIdx][trainWork][trainHour];
                 
                 // Update models
                 this.avrVal.setVal(locAvrg.getVal(rec)) // Set avrVal that is used by ftrExtractor (avrVal.getVal())
-                linreg.fit(this.featureSpace.ftrVec(trainRec), targetVal);
+                linreg.partialFit(this.featureSpace.extractVector(rec), targetVal);
                 linreg.updateCount++;
 
             }
@@ -152,10 +155,10 @@ Model.prototype.predict = function (rec) {
         
     for (var horizonIdx in this.horizons) {
         // Get rec for training
-        var trainRecId = rec.store.getStreamAggr(RecordBuffers[horizonIdx].name).val.oldest.$id;
+        var trainRecId = rec.$store.getStreamAggr(RecordBuffers[horizonIdx].name).val.oldest.$id;
             
         // Get prediction interval and time
-        var predInter = Math.abs(rec.DateTime - rec.store[trainRecId].DateTime);
+        var predInter = Math.abs(rec.DateTime - rec.$store[trainRecId].DateTime);
         var predTime = new Date(rec.DateTime.getTime() + predInter);
         
         // Select correct linregs model
@@ -175,14 +178,14 @@ Model.prototype.predict = function (rec) {
             var predictionFieldName = this.predictionFields[predictionFieldIdx].field.name;
                 
             this.avrVal.setVal(locAvrg.getVal({ "DateTime": predTime }));
-            predictionRec[predictionFieldName] = linreg.predict(this.featureSpace.ftrVec(rec));
+            predictionRec[predictionFieldName] = linreg.predict(this.featureSpace.extractVector(rec));
         }
             
         // Add prediction record to predictions array
         predictionRecs.push(predictionRec);
             
-        this.predictionStore.add(predictionRec);
-        rec.addJoin("Predictions", this.predictionStore.last);
+        this.predictionStore.push(predictionRec);
+        rec.$addJoin("Predictions", this.predictionStore.last);
     };
     return predictionRecs;
 }
@@ -193,8 +196,8 @@ Model.prototype.evaluate = function (rec) {
         
     for (var horizonIdx in this.horizons) {
             
-        var trainRecId = rec.store.getStreamAggr(RecordBuffers[horizonIdx].name).val.oldest.$id;
-        var trainRec = rec.store[trainRecId]
+        var trainRecId = rec.$store.getStreamAggr(RecordBuffers[horizonIdx].name).val.oldest.$id;
+        var trainRec = rec.$store[trainRecId]
         
         for (var errorMetricIdx in this.errorMetrics) {
             var errRec = {};
@@ -211,8 +214,8 @@ Model.prototype.evaluate = function (rec) {
             }
             
             // add errRec to Evaluation sore, and add join to Predictions store which is linked to Original store
-            this.evaluationStore.add(errRec);
-            trainRec.Predictions[horizonIdx].addJoin("Evaluation", this.evaluationStore.last);
+            this.evaluationStore.push(errRec);
+            trainRec.Predictions[horizonIdx].$addJoin("Evaluation", this.evaluationStore.last);
         }
     }
 }
@@ -222,7 +225,7 @@ Model.prototype.consoleReport = function (rec) {
     
     if (rec.$id < this.evalOffset) return; // If condition is true, stop function here.
     
-    var store = rec.store;
+    var store = rec.$store;
     if (store[store.length - 1].DateTime.getDay() !== store[store.length - 2].DateTime.getDay()) {
         console.log("\n=====================================\n=== REC: %s ===\n=====================================",
         rec.DateTime);
@@ -230,11 +233,11 @@ Model.prototype.consoleReport = function (rec) {
     
     for (horizonIdx in this.horizons) {
         
-        var trainRecId = rec.store.getStreamAggr(RecordBuffers[horizonIdx].name).val.oldest.$id;
-        var trainRec = rec.store[trainRecId]
+        var trainRecId = rec.$store.getStreamAggr(RecordBuffers[horizonIdx].name).val.oldest.$id;
+        var trainRec = rec.$store[trainRecId]
         
         // Only one report per day
-        var store = rec.store;
+        var store = rec.$store;
         var print = store[store.length - 1].DateTime.getDay() !== store[store.length - 2].DateTime.getDay();
         if (!print) return;
         if (store[trainRecId].Predictions[horizonIdx] == null) return;

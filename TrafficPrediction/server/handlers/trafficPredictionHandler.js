@@ -10,7 +10,7 @@ var TrafficPredictionHandler = function (_base) {
 // Returns sensor id stores
 TrafficPredictionHandler.prototype.handleGetSensors = function (req, res) {
     try {
-        res.status(200).json(this.base.store("CounterNode").recs.toJSON().records);
+        res.status(200).json(this.base.store("CounterNode").allRecords.toJSON().records);
     }
     catch (err) {
         if (typeof err.message != 'undefined' && err.message == "[addon] Exception: Base is closed!") {
@@ -129,7 +129,7 @@ TrafficPredictionHandler.prototype.handleAddMeasurement = function (req, res) {
     
     // Try to add record to store
     try {
-        var id = trafficStore.add(rec);
+        var id = trafficStore.push(rec);
     }
     catch (err) {
         res.status(500).json({ error: "Internal Server Error" }).end();
