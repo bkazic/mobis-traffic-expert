@@ -129,6 +129,7 @@ TrafficPredictionHandler.prototype.handleAddMeasurement = function (req, res) {
     
     // Try to add record to store
     try {
+        console.log(JSON.stringify(rec,null,2)) // DEBUGING
         var id = trafficStore.push(rec);
     }
     catch (err) {

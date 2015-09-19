@@ -41,7 +41,7 @@ exports.importData = function (url, inStores, outStores, limit) {
         var dateTimeFields = getDateTimeFieldNames(loadStores);
         
         for (var ii = 0; ii < currRecIdxs.length; ii++) {
-            var currRec = loadStores[ii].recs[currRecIdxs[ii]];
+            var currRec = loadStores[ii].allRecords[currRecIdxs[ii]];
             if (currRec == null) continue;
             if (currRec[dateTimeFields[ii]].getTime() < min) {
                 min = currRec[dateTimeFields[ii]].getTime();
@@ -61,7 +61,7 @@ exports.importData = function (url, inStores, outStores, limit) {
     var respCallBack = function (resp) {
         var lowestRecIdx = findLowestRecIdx(currRecIdxs);
         try {
-        var rec = loadStores[lowestRecIdx].recs[currRecIdxs[lowestRecIdx]]
+        var rec = loadStores[lowestRecIdx].allRecords[currRecIdxs[lowestRecIdx]]
         } 
         catch (err) {
             request.post(url, { json: { message: "[IMPUTOR] Finished importing data." } }, function (err, res, body) {
