@@ -132,7 +132,7 @@ predictionStore.addStreamAggr({
 ///////////////////// LOADING DATA: SIMULATING DATA FLOW /////////////////////
 // load rawStore from file
 
-//qm.load.jsonFile(rawStore, "./sandbox/data.json");
+qm.load.jsonFile(rawStore, "./sandbox/data.json");
 //qm.load.jsonFileLimit(rawStore, "./sandbox/data.json", 100);
 
 //console.log(rawStore.length); // DEBUGING

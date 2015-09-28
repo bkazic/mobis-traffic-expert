@@ -141,7 +141,7 @@ Model.prototype.update = function (rec) {
                 
                 // Update models
                 this.avrVal.setVal(locAvrg.getVal(rec)) // Set avrVal that is used by ftrExtractor (avrVal.getVal())
-                linreg.partialFit(this.featureSpace.extractVector(rec), targetVal);
+                linreg.partialFit(this.featureSpace.extractVector(trainRec), targetVal);
                 linreg.updateCount++;
 
             }
