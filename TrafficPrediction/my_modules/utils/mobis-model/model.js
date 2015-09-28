@@ -253,14 +253,17 @@ Model.prototype.consoleReport = function (rec) {
         console.log("Update count: " + trainRec.Predictions[horizonIdx].UpdateCount + "\n")
         console.log("Working on rec: " + rec.DateTime.toISOString());
         console.log("Prediction from: " + trainRec.Predictions[horizonIdx].OriginalTime.toISOString()); // Same as trainRec.DateTime.string             
-        console.log("Prediction horizon: " + trainRec.Predictions[horizonIdx].PredictionHorizon + "\n")
+        console.log("Prediction horizon: " + trainRec.Predictions[horizonIdx].PredictionHorizon)
         //console.log("Target: " + rec[this.target.name]); 
         //console.log(this.target.name + ": " + trainRec.Predictions[horizonIdx][this.target.name]);
 
+        // report predicted values
+        console.log("\n--> Predicted values:");
         this.predictionFields.forEach(function (predField) {
-            var predFieldNm = predField.field.name;
-            var predValue = trainRec.Predictions[horizonIdx][predFieldNm];
-            console.log(predFieldNm + ": " + predValue);
+            var fieldNm = predField.field.name;
+            var predValue = trainRec.Predictions[horizonIdx][fieldNm];
+            var trueValue = rec[fieldNm];
+            console.log("%s: %s (true: %s)", fieldNm, predValue.toFixed(2), trueValue.toFixed(2));
         });
         
         // Report evaluation metrics in the console
