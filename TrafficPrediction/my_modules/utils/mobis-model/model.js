@@ -46,10 +46,13 @@ createLinRegModels = function (fields, horizons, ftrSpace) {
     var linregs = []; // this will be array of objects
     for (var field in fields) { // models for prediction fields
         linregs[field] = [];
+        linregs[field]["Model"] = { "field": fields[field].field.name };
         for (var horizon in horizons) { // models for horizons
             linregs[field][horizon] = [];
+            linregs[field][horizon]["Model"] = { "horizon": horizons[horizon] };
             for (var i = 0; i < 2; i++) { // 2 models: working day or not
                 linregs[field][horizon][i] = [];
+                linregs[field][horizon][i]["Model"] = { "WorkingDay": Boolean(i) }
                 for (var j = 0; j < 24; j++) { // 24 models: for every hour in day
                     linregs[field][horizon][i][j] = new analytics.RecLinReg({ "dim": ftrSpace.dim, "forgetFact": 1, "regFact": 10000 });
                     linregs[field][horizon][i][j]["predictionField"] = fields[field].field.name;
