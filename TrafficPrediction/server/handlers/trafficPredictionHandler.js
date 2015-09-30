@@ -9,19 +9,24 @@ var TrafficPredictionHandler = function (_base) {
 
 // Returns sensor id stores
 TrafficPredictionHandler.prototype.handleGetSensors = function (req, res) {
-    try {
-        res.status(200).json(this.base.store("CounterNode").recs.toJSON().records);
-    }
-    catch (err) {
-        if (typeof err.message != 'undefined' && err.message == "[addon] Exception: Base is closed!") {
-            res.status(500).json({ error: "Base is closed!" });
-            logger.warn("Cannot execute. Base is closed!");
-        }
-        else {
-            res.status(500).json({ error: "Internal Server Error" });
-            logger.error(err.stack); 
-        }
-    }
+    
+    res.status(501).json({ message: "Not implemented yet" })
+    
+    // TODO
+    
+    //try {
+    //    res.status(200).json(this.base.store("CounterNode").allRecords.toJSON().records);
+    //}
+    //catch (err) {
+    //    if (typeof err.message != 'undefined' && err.message == "[addon] Exception: Base is closed!") {
+    //        res.status(500).json({ error: "Base is closed!" });
+    //        logger.warn("Cannot execute. Base is closed!");
+    //    }
+    //    else {
+    //        res.status(500).json({ error: "Internal Server Error" });
+    //        logger.error(err.stack); 
+    //    }
+    //}
 }
 
 
@@ -129,7 +134,8 @@ TrafficPredictionHandler.prototype.handleAddMeasurement = function (req, res) {
     
     // Try to add record to store
     try {
-        var id = trafficStore.add(rec);
+        console.log(JSON.stringify(rec,null,2)) // DEBUGING
+        var id = trafficStore.push(rec);
     }
     catch (err) {
         res.status(500).json({ error: "Internal Server Error" }).end();

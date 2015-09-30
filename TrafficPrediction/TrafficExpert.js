@@ -16,15 +16,15 @@ Model = require('./my_modules/utils/mobis-model/model.js');
 
 //// Define stores
 // create base for the store
-var base = qm.create('qm.conf', 'store.def', true); 
+//var base = qm.create('qm.conf', 'store.def', true); 
 //This is too verbose
-//var base = new qm.Base({
-//    mode: 'createClean', 
-//    //schemaPath: path.join(__dirname, './store.def'), // its more robust but, doesen't work from the console
-//    schemaPath: './store.def',
-//    //dbPath: path.join(__dirname, './db')
-//    dbPath: './db'
-//})
+var base = new qm.Base({
+    mode: 'createClean', 
+    //schemaPath: path.join(__dirname, './store.def'), // its more robust but, doesen't work from the console (doesent know __dirname)
+    schemaPath: './store.def',
+    //dbPath: path.join(__dirname, './db')
+    dbPath: './db'
+})
 
 
 var rawStore = base.store("rawStore");
@@ -123,7 +123,7 @@ predictionStore.addStreamAggr({
     onAdd: function (rec) {
         // TODO: send prediction to InfoTrip server
         // Example: InfoTrip.updatePathData(rec, callback)
-        InfoTrip.updatePathData(rec)
+       // InfoTrip.updatePathData(rec)
     },
     saveJson: function () { return {} }
 })
@@ -131,15 +131,15 @@ predictionStore.addStreamAggr({
 
 ///////////////////// LOADING DATA: SIMULATING DATA FLOW /////////////////////
 // load rawStore from file
-/*
+
 qm.load.jsonFile(rawStore, "./sandbox/data.json");
-qm.load.jsonFile(rawStore, "./sandbox/data.json", 100);
+//qm.load.jsonFileLimit(rawStore, "./sandbox/data.json", 100);
 
-console.log(rawStore.recs.length); // DEBUGING
-console.log(resampledStore.recs.length); // DEBUGING
+//console.log(rawStore.length); // DEBUGING
+//console.log(resampledStore.length); // DEBUGING
 
-console.log(base.getStoreList().map(function (store) { return store.storeName}))
-*/
+//console.log(base.getStoreList().map(function (store) { return store.storeName}))
+
 ///////////////////// REST SERVER /////////////////////
 // Start the server
 server.init(base);
@@ -147,6 +147,6 @@ server.start(config.trafficPredictionService.server.port);
 
 // Ways to start service:
 // --> "node TrafficExpert.js" - starts the script
-// --> "set NODE_ENV=development&& node TrafficExpert.js" - starts the script in devel mode
+// --> "set NODE_ENV=development&& node TrafficExpert.js" - starts the script in development mode
 // --> "set NODE_ENV=preoduction&& node TrafficExpert.js" - starts the script in production mode
 // --> "npm start" - starts the script wiht NODE_ENV defined in package.json 
