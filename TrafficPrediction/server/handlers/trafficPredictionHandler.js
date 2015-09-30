@@ -76,7 +76,7 @@ TrafficPredictionHandler.prototype.handleGetTrafficPredictionsById = function (r
     catch (err) {
         if (typeof err.message != 'undefined' && err.message == "[addon] Exception: Base is closed!") {
             res.status(500).json({ error: "Base is closed!" });
-            logger.warn("Cannot execute. Base is closed!"); console.log();
+            logger.warn("Cannot execute. Base is closed!"); 
         }
         else {
             res.status(500).json({ error: "Internal Server Error" });
@@ -89,11 +89,11 @@ TrafficPredictionHandler.prototype.handleGetTrafficPredictionsById = function (r
 TrafficPredictionHandler.prototype.handleAddMeasurement = function (req, res) {
     // If you want to test from Simple REST Client, make sure you add in headers: Content-Type: application/json
     var rec = req.body;
-    logger.debug("Recieved new record: " + JSON.stringify(req.body)); console.log();
+    logger.debug("Recieved new record: " + JSON.stringify(req.body)); 
 
     // Check for empty records.
     if (Object.keys(rec).length == 0) {
-        logger.warn("Recieved empty record. It will not be stored."); console.log();
+        logger.warn("Recieved empty record. It will not be stored."); 
         res.status(400).json({ error: "Recieved empty record. It will not be stored." }).end();
         return;
     }
@@ -127,30 +127,30 @@ TrafficPredictionHandler.prototype.handleAddMeasurement = function (req, res) {
     var storeName = "rawStore";
     trafficStore = this.base.store(storeName);
     if (trafficStore == null) {
-        logger.warn("Store with name %s was not found. Cannot add record.", storeName); console.log()
+        logger.warn("Store with name %s was not found. Cannot add record.", storeName);
         res.status(500).json({error: "Store with name " + storeName + " was not found. Cannot add record."}).end();
         return;
     }
     
     // Try to add record to store
     try {
-        console.log(JSON.stringify(rec,null,2)) // DEBUGING
+        //console.log(JSON.stringify(rec,null,2)) // DEBUGING
         var id = trafficStore.push(rec);
     }
     catch (err) {
         res.status(500).json({ error: "Internal Server Error" }).end();
-        logger.error(err.stack); console.log();
+        logger.error(err.stack);
     }
     
     // If record was not stored sucesfully, id will be -1
     if (id == -1) {
-        logger.error("Record was not stored"); console.log();
+        logger.error("Record was not stored"); 
         res.status(400).json({ error: 'Record not stored!' }).end()
         return;
     }
     
-    logger.debug("Record stored into store %s. Store length: %s ", trafficStore.name, trafficStore.length); console.log();
-    logger.info("New record was stored into store %s. Record: %s", trafficStore.name, JSON.stringify(req.body)); console.log();
+    logger.debug("Record stored into store %s. Store length: %s ", trafficStore.name, trafficStore.length);
+    logger.info("New record was stored into store %s. Record: %s", trafficStore.name, JSON.stringify(req.body));
     res.status(200).json({message: "OK"}).end();
 }
 

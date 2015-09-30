@@ -10,7 +10,7 @@
             "admin": { "password": "admin" }
         },
         "logger": {
-            "console": { "level": "info" }
+            "console": { "level": "error" }
         }
     },
     
