@@ -5,10 +5,15 @@
   "main": "server.js",
   "author": {
     "name": "bkazic",
-    "email": ""
+    "email": "blaz.kazic@ijs.si"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bkazic/mobis-traffic-expert"
   },
   "scripts": {
-    "start": "set NODE_ENV=development&& node TrafficExpert.js"
+    "start": "set NODE_ENV=development&& node index.js",
+	"test": "mocha"
   },
   "dependencies": {
     "basic-auth": "^1.0.3",

@@ -7,7 +7,7 @@ var env = process.env.NODE_ENV || 'development';
 var config = require('./config.json')[env];
 
 // Set verbosity of QMiner internals
-qm.verbosity(1); 
+qm.verbosity(1);
 
 // create Base in CLEAN CREATE mode
 function cleanCreateMode() {
