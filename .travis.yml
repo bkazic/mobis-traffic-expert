@@ -9,4 +9,4 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq uuid-dev
   - sudo apt-get install build-essential
-script: cd TrafficPrediction && npm install && npm test
+  - cd TrafficPrediction
