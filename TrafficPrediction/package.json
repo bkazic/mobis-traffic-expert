@@ -27,8 +27,5 @@
   "devDependencies": {
     "mocha": "^2.2.4",
     "supertest": "^1.1.0"
-  },
-  "optionalDependencies": {
-    "sleep": "^2.0.0"
   }
 }
