@@ -6065,3 +6065,14 @@ $RECYCLE.BIN/
 /TrafficPrediction/server/logs/all-logs.log.2015-06-07
 /TrafficPrediction/server/logs/all-logs.log.2015-06-07.1
 /TrafficPrediction/server/logs/all-logs.log.2015-06-07.2
+/TrafficPrediction/node_modules
+/RealTimeImputor/node_modules
+/Imputor/node_modules
+/TrafficPrediction/server/logs
+/TrafficPrediction/test/db
+/TrafficPrediction/test/db2
+/RealTimeImputor/logs
+/Imputor/db
+/TrafficPrediction/db
+/Imputor/sandbox
+/TrafficPrediction/sandbox
