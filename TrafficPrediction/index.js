@@ -1,5 +1,4 @@
 ﻿var qm = require('qminer');
-//var trafficPrediction = require('./TrafficPrediction.js');
 var trafficExpert = require('./TrafficExpert.js');
 var server = require('./server/server.js');
 var path = require('path');
@@ -15,9 +14,7 @@ function cleanCreateMode() {
     var base = new qm.Base({
         mode: 'createClean', 
         schemaPath: path.join(__dirname, './store.def'), // its more robust but, doesen't work from the console (doesent know __dirname)
-        schemaPath: './store.def',
         dbPath: path.join(__dirname, './db'),
-        dbPath: './db'
     })
     
     // Init traffic prediction work flow

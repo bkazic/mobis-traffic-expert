@@ -13,7 +13,7 @@
   },
   "scripts": {
     "start": "set NODE_ENV=development&& node index.js",
-	"test": "mocha"
+    "test": "set NODE_ENV=test&& mocha -b"
   },
   "dependencies": {
     "basic-auth": "^1.0.3",
@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "mocha": "^2.2.4",
-    "sleep": "^2.0.0"
+    "sleep": "^2.0.0",
+    "supertest": "^1.1.0"
   }
 }

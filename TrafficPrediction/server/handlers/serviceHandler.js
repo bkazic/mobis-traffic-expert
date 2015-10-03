@@ -58,7 +58,6 @@ ServiceHandler.prototype.handleGetStoreList = function (req, res) {
 ServiceHandler.prototype.handleGetStoreRecs = function (req, res) {
     var storeName = req.params.store; // TODO: try cath
     var limit = (typeof req.query.limit === 'undefined') ? 10 : parseInt(req.query.limit);
-    //var limit = 10;
     var recs = [];
 
     try {

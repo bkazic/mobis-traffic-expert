@@ -113,7 +113,7 @@ exports.init = function (base) {
         saveJson: function () { return {} }
     })
     
-    console.log("\nPipeline initialized...\n");
+    // console.log("\nPipeline initialized...\n");
     // TODO also use logger
     
 }

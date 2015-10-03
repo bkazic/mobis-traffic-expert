@@ -17,7 +17,7 @@ var base = new qm.Base({
             ]
         }
     ],
-    dbPath: path.join(__dirname, './db') 
+    dbPath: path.join(__dirname, './db2') 
 });
 
 var testStore = base.store('testStore');
@@ -28,6 +28,12 @@ describe('SpecialDates module tests', function () {
     var SlovenianHolidays = SpecialDates.newSpecialDates('Slovenian_holidays');
     var FoolMoon = SpecialDates.newSpecialDates('Full_moon');
     var CalendarFtrs = SpecialDates.newCalendarFeatures();
+    
+    // close store (base) after all tests are finished
+    after(function (done) {
+        base.close();
+        done();
+    })
 
     describe('testing module for date: 2015-01-01T01:00:00', function () {
         
