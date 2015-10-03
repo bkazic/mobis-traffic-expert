@@ -6,4 +6,8 @@ node_js:
 env:
   global:
     - NODE_ENV=test
-before_install: cd TrafficPrediction
+before_install: 
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq uuid-dev
+  - sudo apt-get install build-essential
+  - cd TrafficPrediction
