@@ -38,7 +38,7 @@ describe('Server test', function () {
         trafficExpert.init(base);
         
         // Import initial data
-        qm.load.jsonFile(base.store("rawStore"), path.join(__dirname, "../sandbox/data-small.json "));
+        qm.load.jsonFile(base.store("rawStore"), path.join(__dirname, "../sandbox/data-small.json"));
         
         // Initialize and start serverserver
         server.init(base);
