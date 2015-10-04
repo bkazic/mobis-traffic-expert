@@ -21,6 +21,9 @@ describe('Testing NODE_ENV', function () {
 describe('Server test', function () {
     var url = config.trafficPredictionService.server.root;
     var base = undefined;
+    // get (first) admin name and password from config
+    var admin = Object.keys(config.admins)[0];
+    var password = config.admins[admin].password
     
     // create base and start server on localhost before each test
     beforeEach(function () { // this returns same error as *.js
@@ -34,6 +37,9 @@ describe('Server test', function () {
         // Initialize trafficExpert service
         trafficExpert.init(base);
         
+        // Import initial data
+        qm.load.jsonFile(base.store("rawStore"), "./sandbox/data-small.json ");
+        
         // Initialize and start serverserver
         server.init(base);
         server.start(config.trafficPredictionService.server.port);
@@ -44,30 +50,119 @@ describe('Server test', function () {
         base.close();
         server.close(done);
     })
-
+    
+    // localhost:3333/
     it('#GET ' + url + "/", function (done) {
         request(url)
             .get("/")
             .set('Accept', 'application/json')
             .expect(200, done)
     });
+    
+    // localhost:3333/close-base
+    it('#GET ' + url + "/close-base", function (done) {
+        request(url)
+            .get("/get-store-list")
+            .auth(admin, password)
+            .set('Accept', 'application/json')
+            .expect(200, done)
+    });
+    
+    // localhost:3333/get-store-list
+    it('#GET ' + url + "/get-store-list", function (done) {
+        // get (first) admin name from config
+        var adminName = Object.keys(config.admins)[0];
+        request(url)
+            .get("/get-store-list")
+            .auth(admin, password)
+            .set('Accept', 'application/json')
+            .expect(200, done)
+    });
+    
+    // localhost:3333/get-store-recs/rawStore
+    it('#GET ' + url + "/get-store-recs/rawStore", function (done) {
+        // get (first) admin name from config
+        var adminName = Object.keys(config.admins)[0];
+        request(url)
+            .get("/get-store-recs/rawStore")
+            .auth(admin, password)
+            .set('Accept', 'application/json')
+            .expect(200, done)
+    });
+    
+    // localhost:3333/get-store-recs/rawStore?limit=5
+    it('#GET ' + url + "/get-store-recs/rawStore?limit=5", function (done) {
+        // get (first) admin name from config
+        var adminName = Object.keys(config.admins)[0];
+        request(url)
+            .get("/get-store-recs/rawStore?limit=5")
+            .auth(admin, password)
+            .set('Accept', 'application/json')
+            .expect(200, done)
+    });
+    
+    // localhost:3333/get-store-recs/resampledStore?limit=5
+    it('#GET ' + url + "/get-store-recs/resampledStore?limit=5", function (done) {
+        // get (first) admin name from config
+        var adminName = Object.keys(config.admins)[0];
+        request(url)
+            .get("/get-store-recs/resampledStore?limit=5")
+            .auth(admin, password)
+            .set('Accept', 'application/json')
+            .expect(200, done)
+    });
+    
+    // localhost:3333/get-store-recs/predictionStore?limit=5
+    it('#GET ' + url + "/get-store-recs/predictionStore?limit=5", function (done) {
+        // get (first) admin name from config
+        var adminName = Object.keys(config.admins)[0];
+        request(url)
+            .get("/get-store-recs/predictionStore?limit=5")
+            .auth(admin, password)
+            .set('Accept', 'application/json')
+            .expect(200, done)
+    });
+    
+    // localhost:3333/get-store-recs/evaluationStore?limit=5
+    it('#GET ' + url + "/get-store-recs/evaluationStore?limit=5", function (done) {
+        // get (first) admin name from config
+        var adminName = Object.keys(config.admins)[0];
+        request(url)
+            .get("/get-store-recs/evaluationStore?limit=5")
+            .auth(admin, password)
+            .set('Accept', 'application/json')
+            .expect(200, done)
+    });
+    
+    // localhost:3333/traffic-predictions/get-sensors
+    it('#GET ' + url + "/traffic-predictions/get-sensors", function (done) {
+        // get (first) admin name from config
+        var adminName = Object.keys(config.admins)[0];
+        request(url)
+            .get("/traffic-predictions/get-sensors")
+            .set('Accept', 'application/json')
+            .expect(501, done)
+    });
 
+    // localhost:3333/traffic-predictions
     it('#GET ' + url + "/traffic-predictions", function (done) {
         request(url)
             .get("/traffic-predictions")
             .set('Accept', 'application/json')
             .expect(200, done)
     });
-
-    it('#GET ' + url + "/get-store-list", function (done) {
-        // get (first) admin name from config
-        var adminName = Object.keys(config.admins)[0]; 
+    
+    // localhost:3333/traffic-predictions/add
+    it('#POST ' + url + "/traffic-predictions/add", function (done) {
         request(url)
-            .get("/get-store-list")
-            .auth(adminName, config.admins[adminName].password)
-            .set('Accept', 'application/json')
-            .expect(200, done)
+          .post('/traffic-predictions/add')
+          .send({
+            "Origin": 76, "MacAddress": null, "Comment#1": "Estimation", 
+            "Destination": 80, "DateTime": "2015-04-01T05:56:04", 
+            "Comment#2": "OK", "AverageSpeed": 93.3, "TravelTime": 8.4})
+          .expect(200, done)
     });
+    
 });
 
 // references how to build rest api unit tests

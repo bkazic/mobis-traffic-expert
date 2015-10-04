@@ -2,8 +2,8 @@
     "development": {
         "trafficPredictionService": {
             "server": {
-				"root": "http://localhost:1337",
-                "port": 1337
+				"root": "http://localhost:1338",
+                "port": 1338
             }
         },
         "admins": {
