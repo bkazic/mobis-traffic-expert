@@ -31,7 +31,7 @@ describe('Server test', function () {
         base = new qm.Base({
             mode: 'createClean', 
             schemaPath: path.join(__dirname, '../store.def'), // its more robust but, doesen't work from the console (doesent know __dirname)
-            dbPath: path.join(__dirname, './db'),
+            dbPath: path.join(__dirname, './db3'),
         })
         
         // Initialize trafficExpert service
