@@ -23,7 +23,7 @@
             }
         }, 
         "logger": {
-            "console": { "level": "error" }
+            "console": { "level": "info" }
         }
     },
 

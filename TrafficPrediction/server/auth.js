@@ -12,8 +12,8 @@ var auth = function (req, res, next) {
     
     var user = basicAuth(req);
 
-    // This is the shortest version. Not sure which one is better.
-    if (user && config.admins[user.name] && config.admins[user.name].password === user.pass) {
+    // Check authorisation
+    if (user && config.admins && config.admins[user.name] && config.admins[user.name].password === user.pass) {
         return next();
     };
     return unauthorized(res);
