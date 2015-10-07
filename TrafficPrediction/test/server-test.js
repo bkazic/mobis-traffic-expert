@@ -27,6 +27,7 @@ describe('Server test', function () {
     
     // create base and start server on localhost before each test
     beforeEach(function () { // this returns same error as *.js
+        this.timeout(30000);
         // Initialise base in clean create mode   
         base = new qm.Base({
             mode: 'createClean', 
@@ -47,6 +48,7 @@ describe('Server test', function () {
     
     // after each test close base and server
     afterEach(function (done) {
+        this.timeout(10000);
         base.close();
         server.close(done);
     })
