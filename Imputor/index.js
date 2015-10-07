@@ -2,6 +2,7 @@
 var path = require('path');
 var config = require('./config-debug.js');
 //var config = require('./config-release.js');
+var scriptArgs = process.argv[2];
 
 // Import my modules
 Utils = require('./my_modules/utils/importData.js');
@@ -21,7 +22,16 @@ function cleanCreateMode() {
         dbPath: path.join(__dirname, './db')
     })
     
-    qm.load.jsonFile(base.store("data"), path.join(__dirname, "/sandbox/data.json"));
+    // file to import
+    var fileName = "/sandbox/data.json";
+    
+    // override filename if script argument is defined
+    if (typeof scriptArgs !== 'undefined') { 
+        fileName = scriptArgs;
+    } 
+    
+    // load data to store
+    qm.load.jsonFile(base.store("data"), path.join(__dirname, fileName));
   
     //base.close();
     return base;
@@ -50,5 +60,6 @@ var base = createBase.cleanCreateMode();
 
 // Start importing records
 var url = config.trafficPredictionService.root + "/traffic-predictions/add";
-Utils.importData(url, [base.store('data')], [base.store('data')],100)
+Utils.importData(url, [base.store('data')], [base.store('data')])
+//Utils.importData(url, [base.store('data')], [base.store('data')],100)
 

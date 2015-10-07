@@ -1,11 +1,15 @@
 {
   "name": "Imputor",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Imputor",
   "main": "server.js",
   "author": {
     "name": "bkazic",
-    "email": ""
+    "email": "blaz.kazic@ijs.si"
+  },  
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bkazic/mobis-traffic-expert"
   },
   "dependencies": {
     "qminer": "^2.3.0",

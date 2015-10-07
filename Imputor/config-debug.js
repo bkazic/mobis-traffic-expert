@@ -1,6 +1,6 @@
 ﻿var config = {
     "trafficPredictionService": {
-        "root": "http://localhost:1337"
+        "root": "http://localhost:1338"
     }
 }
 
