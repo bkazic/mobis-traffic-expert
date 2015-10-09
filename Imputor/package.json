@@ -12,7 +12,7 @@
     "url": "https://github.com/bkazic/mobis-traffic-expert"
   },
   "dependencies": {
-    "qminer": "^2.3.0",
+    "qminer": "^2.5.0",
     "request": "^2.57.0"
   },
   "devDependencies": {

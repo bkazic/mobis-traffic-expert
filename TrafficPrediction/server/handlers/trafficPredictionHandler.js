@@ -64,7 +64,8 @@ TrafficPredictionHandler.prototype.handleGetTrafficPredictionsById = function (r
         
         // Return from function if store with particular sensor id was not found
         if (store.last == null) {
-            res.status(400).send('Prediction for this sensor ID does not exists');
+            res.status(400).send({ error: 'Prediction for sensor ID "' + id  + '" does not exists' });
+            logger.warn('Prediction for sensor ID ' + id + ' does not exists');
             return;
         }
         res.json(store.last.toJSON(true, true));

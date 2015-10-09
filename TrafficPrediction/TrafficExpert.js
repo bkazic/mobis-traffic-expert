@@ -136,7 +136,7 @@ exports.init = function (base) {
             name: "analytics",
             onAdd: function (rec) {
                 var mobisModel = mobisModels[rec.Sensor.pathId];
-                
+
                 // analytics pipeline
                 mobisModel.predict(rec);
                 mobisModel.update(rec);
