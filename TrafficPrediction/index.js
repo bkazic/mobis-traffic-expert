@@ -5,7 +5,7 @@ var env = process.env.NODE_ENV || 'development';
 var config = require('./config.json')[env];
 
 // Set verbosity of QMiner internals
-qm.verbosity(1);
+qm.verbosity(0);
 
 // read input script argument for mode type. Default is "cleanCreate"
 var scriptArgs = (process.argv[2] == null) ? "cleanCreate" : process.argv[2];

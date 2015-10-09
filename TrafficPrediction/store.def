@@ -1,13 +1,23 @@
 ﻿[
 	{
+	"name": "sensorsStore",
+	"fields": [
+		{ "name": "pathId", "type": "float", "primary": true},
+		{ "name": "pathName", "type": "string", "null": true},
+		{ "name": "origin", "type": "float", "null": true},
+		{ "name": "destination", "type": "float", "null": true}
+		]
+	},
+	{
 	"name": "rawStore",
 	"fields": [
 		{ "name": "DateTime", "type": "datetime", "primary": true },
 		{ "name": "TravelTime", "type": "float", "null": true },
-		{ "name": "AverageSpeed", "type": "float", "null": true },
-		{ "name": "Origin", "type": "float", "null": true }
+		{ "name": "AverageSpeed", "type": "float", "null": true }
+		//{ "name": "Origin", "type": "float", "null": true }
 		],
 	"joins": [
+		{ "name": "Sensor", "type": "field", "store": "sensorsStore"},
 		{ "name": "Predictions", "type": "index", "store": "predictionStore" }
 		]
    	},
@@ -16,10 +26,11 @@
 	"fields": [
 		{ "name": "DateTime", "type": "datetime", "primary": true },
 		{ "name": "TravelTime", "type": "float", "null": true },
-		{ "name": "AverageSpeed", "type": "float", "null": true },
-		{ "name": "Origin", "type": "float", "null": true }
+		{ "name": "AverageSpeed", "type": "float", "null": true }
+		//{ "name": "Origin", "type": "float", "null": true }
 		],
 	"joins": [
+		{ "name": "Sensor", "type": "field", "store": "sensorsStore"},
 		{ "name": "Predictions", "type": "index", "store": "predictionStore" }
 		]
    	},

@@ -31,7 +31,7 @@ describe('Server test', function () {
         // Initialise base in clean create mode   
         base = new qm.Base({
             mode: 'createClean', 
-            schemaPath: path.join(__dirname, '../store.def'), // its more robust but, doesen't work from the console (doesent know __dirname)
+            //schemaPath: path.join(__dirname, '../store.def'), // its more robust but, doesen't work from the console (doesent know __dirname)
             dbPath: path.join(__dirname, './db3'),
         })
         
@@ -39,7 +39,7 @@ describe('Server test', function () {
         trafficExpert.init(base);
         
         // Import initial data
-        qm.load.jsonFile(base.store("rawStore"), path.join(__dirname, "../sandbox/data-small.json"));
+        qm.load.jsonFile(base.store("rawStore_1"), path.join(__dirname, "../sandbox/data-small.json"));
         
         // Initialize and start serverserver
         server.init(base);
@@ -81,56 +81,56 @@ describe('Server test', function () {
             .expect(200, done)
     });
     
-    // localhost:3333/get-store-recs/rawStore
-    it('#GET ' + url + "/get-store-recs/rawStore", function (done) {
+    // localhost:3333/get-store-recs/rawStore_1
+    it('#GET ' + url + "/get-store-recs/rawStore_1", function (done) {
         // get (first) admin name from config
         var adminName = Object.keys(config.admins)[0];
         request(url)
-            .get("/get-store-recs/rawStore")
+            .get("/get-store-recs/rawStore_1")
             .auth(admin, password)
             .set('Accept', 'application/json')
             .expect(200, done)
     });
     
-    // localhost:3333/get-store-recs/rawStore?limit=5
-    it('#GET ' + url + "/get-store-recs/rawStore?limit=5", function (done) {
+    // localhost:3333/get-store-recs/rawStore_1?limit=5
+    it('#GET ' + url + "/get-store-recs/rawStore_1?limit=5", function (done) {
         // get (first) admin name from config
         var adminName = Object.keys(config.admins)[0];
         request(url)
-            .get("/get-store-recs/rawStore?limit=5")
+            .get("/get-store-recs/rawStore_1?limit=5")
             .auth(admin, password)
             .set('Accept', 'application/json')
             .expect(200, done)
     });
     
-    // localhost:3333/get-store-recs/resampledStore?limit=5
-    it('#GET ' + url + "/get-store-recs/resampledStore?limit=5", function (done) {
+    // localhost:3333/get-store-recs/resampledStore_1?limit=5
+    it('#GET ' + url + "/get-store-recs/resampledStore_1?limit=5", function (done) {
         // get (first) admin name from config
         var adminName = Object.keys(config.admins)[0];
         request(url)
-            .get("/get-store-recs/resampledStore?limit=5")
+            .get("/get-store-recs/resampledStore_1?limit=5")
             .auth(admin, password)
             .set('Accept', 'application/json')
             .expect(200, done)
     });
     
-    // localhost:3333/get-store-recs/predictionStore?limit=5
-    it('#GET ' + url + "/get-store-recs/predictionStore?limit=5", function (done) {
+    // localhost:3333/get-store-recs/predictionStore_1?limit=5
+    it('#GET ' + url + "/get-store-recs/predictionStore_1?limit=5", function (done) {
         // get (first) admin name from config
         var adminName = Object.keys(config.admins)[0];
         request(url)
-            .get("/get-store-recs/predictionStore?limit=5")
+            .get("/get-store-recs/predictionStore_1?limit=5")
             .auth(admin, password)
             .set('Accept', 'application/json')
             .expect(200, done)
     });
     
-    // localhost:3333/get-store-recs/evaluationStore?limit=5
-    it('#GET ' + url + "/get-store-recs/evaluationStore?limit=5", function (done) {
+    // localhost:3333/get-store-recs/evaluationStore_1?limit=5
+    it('#GET ' + url + "/get-store-recs/evaluationStore_1?limit=5", function (done) {
         // get (first) admin name from config
         var adminName = Object.keys(config.admins)[0];
         request(url)
-            .get("/get-store-recs/evaluationStore?limit=5")
+            .get("/get-store-recs/evaluationStore_1?limit=5")
             .auth(admin, password)
             .set('Accept', 'application/json')
             .expect(200, done)
@@ -143,7 +143,7 @@ describe('Server test', function () {
         request(url)
             .get("/traffic-predictions/get-sensors")
             .set('Accept', 'application/json')
-            .expect(501, done)
+            .expect(200, done)
     });
 
     // localhost:3333/traffic-predictions
@@ -161,7 +161,8 @@ describe('Server test', function () {
           .send({
             "Origin": 76, "MacAddress": null, "Comment#1": "Estimation", 
             "Destination": 80, "DateTime": "2015-04-01T05:56:04", 
-            "Comment#2": "OK", "AverageSpeed": 93.3, "TravelTime": 8.4})
+            "Comment#2": "OK", "AverageSpeed": 93.3, "TravelTime": 8.4,
+            "Sensor": {"pathId":1}})
           .expect(200, done)
     });
     

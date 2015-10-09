@@ -8,13 +8,16 @@ function cleanCreateMode() {
     // Initialise base in clean create mode   
     var base = new qm.Base({
         mode: 'createClean', 
-        schemaPath: path.join(__dirname, './store.def'), // its more robust but, doesen't work from the console (doesent know __dirname)
+        //schemaPath: path.join(__dirname, './store.def'), // its more robust but, doesen't work from the console (doesent know __dirname)
         dbPath: path.join(__dirname, './db'),
     })
     
     // Init traffic prediction work flow
     trafficExpert.init(base); //Initiate the traffic prediction workflow
     
+    // Import sensor data
+    //qm.load.jsonFile(base.store("sensorsStore"), path.join(__dirname, "./sandbox/sensors.json"))
+
     return base;
 }
 
@@ -50,9 +53,12 @@ function cleanCreateLoadMode() {
     trafficExpert.init(base); //Initiate the traffic prediction workflow
     
     // Import initial data
+    qm.load.jsonFile(base.store("sensorsStore"), path.join(__dirname, "./sandbox/sensors.json"))
+    qm.load.jsonFile(base.store("rawStore"), path.join(__dirname, "./sandbox/data1.json"));
     logger.info("Training models...")
-    qm.load.jsonFile(base.store("rawStore"), "./sandbox/data1.json ");
     
+    debugger
+
     return base;
 }
 

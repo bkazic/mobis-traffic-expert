@@ -23,7 +23,7 @@ function cleanCreateMode() {
     })
     
     // file to import
-    var fileName = "/sandbox/data.json";
+    var fileName = "/sandbox/data-new.json";
     
     // override filename if script argument is defined
     if (typeof scriptArgs !== 'undefined') { 
@@ -31,6 +31,7 @@ function cleanCreateMode() {
     } 
     
     // load data to store
+    qm.load.jsonFile(base.store("sensors"), path.join(__dirname, "/sandbox/sensors.json"));
     qm.load.jsonFile(base.store("data"), path.join(__dirname, fileName));
   
     //base.close();

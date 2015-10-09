@@ -1,5 +1,6 @@
 //Imports
 var qm = require('qminer');
+var logger = require("../logger/logger.js");
 
 SpecialDates = require('../special-dates/special-dates.js')
 LocalizedAverage = require('../baseline-models/localized-average.js')
@@ -90,7 +91,7 @@ createErrorModels = function (fields, horizons, errMetrics) {
 
 //function Model(modelConf) {
 var Model = function (modelConf) {
-    
+    this.modelConf = modelConf
     this.base = modelConf.base;
     this.avrVal = modelConf.locAvr;
     this.horizons = (modelConf.predictionHorizons == null) ? 1 : modelConf.predictionHorizons;
@@ -136,7 +137,8 @@ Model.prototype.update = function (rec) {
                 try {
                     trainRec.Predictions[horizonIdx].$addJoin("Target", rec); 
                 } catch (err) { 
-                    console.log(err + ". Use model.predict(rec) first!")
+                    throw new Error(err + ". Use model.predict(rec) first!")
+                    logger.error(err.stack);
                 }
                 
                 // Select correct linregs model to update
@@ -181,7 +183,12 @@ Model.prototype.predict = function (rec) {
             var predictionFieldName = this.predictionFields[predictionFieldIdx].field.name;
                 
             this.avrVal.setVal(locAvrg.getVal({ "DateTime": predTime }));
-            predictionRec[predictionFieldName] = linreg.predict(this.featureSpace.extractVector(rec));
+            try {
+                predictionRec[predictionFieldName] = linreg.predict(this.featureSpace.extractVector(rec));
+            } catch (err) {
+                throw new Error("Could not make prediction. " + err);
+                logger.error(err.stack);
+            }
         }
             
         // Add prediction record to predictions array

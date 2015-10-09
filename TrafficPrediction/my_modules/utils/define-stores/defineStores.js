@@ -12,8 +12,7 @@ function createSchema(id) {
             "fields": [
                 { "name": "DateTime", "type": "datetime", "primary": true },
                 { "name": "TravelTime", "type": "float", "null": true },
-                { "name": "AverageSpeed", "type": "float", "null": true },
-                { "name": "Origin", "type": "float", "null": true }
+                { "name": "AverageSpeed", "type": "float", "null": true }
             ],
             "joins": [
                 { "name": "Predictions", "type": "index", "store": predictionStoreNm }
@@ -24,8 +23,7 @@ function createSchema(id) {
             "fields": [
                 { "name": "DateTime", "type": "datetime", "primary": true },
                 { "name": "TravelTime", "type": "float", "null": true },
-                { "name": "AverageSpeed", "type": "float", "null": true },
-                { "name": "Origin", "type": "float", "null": true }
+                { "name": "AverageSpeed", "type": "float", "null": true }
             ],
             "joins": [
                 { "name": "Predictions", "type": "index", "store": predictionStoreNm }

@@ -9,24 +9,20 @@ var TrafficPredictionHandler = function (_base) {
 
 // Returns sensor id stores
 TrafficPredictionHandler.prototype.handleGetSensors = function (req, res) {
-    
-    res.status(501).json({ message: "Not implemented yet" })
-    
-    // TODO
-    
-    //try {
-    //    res.status(200).json(this.base.store("CounterNode").allRecords.toJSON().records);
-    //}
-    //catch (err) {
-    //    if (typeof err.message != 'undefined' && err.message == "[addon] Exception: Base is closed!") {
-    //        res.status(500).json({ error: "Base is closed!" });
-    //        logger.warn("Cannot execute. Base is closed!");
-    //    }
-    //    else {
-    //        res.status(500).json({ error: "Internal Server Error" });
-    //        logger.error(err.stack); 
-    //    }
-    //}
+    //res.status(501).json({ message: "Not implemented yet" })
+    try {
+        res.status(200).json(this.base.store("sensorsStore").allRecords.toJSON().records);
+    }
+    catch (err) {
+        if (typeof err.message != 'undefined' && err.message == "[addon] Exception: Base is closed!") {
+            res.status(500).json({ error: "Base is closed!" });
+            logger.warn("Cannot execute. Base is closed!");
+        }
+        else {
+            res.status(500).json({ error: "Internal Server Error" });
+            logger.error(err.stack); 
+        }
+    }
 }
 
 
@@ -105,10 +101,9 @@ TrafficPredictionHandler.prototype.handleAddMeasurement = function (req, res) {
         return;
     }
     
-    /*
     // Extract id
     try {
-        id = rec.measuredBy.Name.replace("-", "_");
+        id = rec.Sensor.pathId;
     }
     catch (err) {
         if (typeof err.message != 'undefined' && err.message.indexOf("Cannot read property") != -1) {
@@ -121,17 +116,16 @@ TrafficPredictionHandler.prototype.handleAddMeasurement = function (req, res) {
             logger.error(err.stack);
         }
     }
-    */
     
     // Find proper store
-    var storeName = "rawStore";
+    var storeName = "rawStore_" + id;
     trafficStore = this.base.store(storeName);
     if (trafficStore == null) {
         logger.warn("Store with name %s was not found. Cannot add record.", storeName);
         res.status(500).json({error: "Store with name " + storeName + " was not found. Cannot add record."}).end();
         return;
     }
-    
+
     // Try to add record to store
     try {
         //console.log(JSON.stringify(rec,null,2)) // DEBUGING

@@ -13,7 +13,7 @@
   },
   "scripts": {
     "start": "set NODE_ENV=development&& node index.js",
-    "test": "set NODE_ENV=test&& mocha -b"
+    "test": "set NODE_ENV=test&& mocha"
   },
   "dependencies": {
     "basic-auth": "^1.0.3",

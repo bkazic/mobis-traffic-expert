@@ -1,0 +1,14 @@
+{"pathId": 1, "pathName": "Neo Risio-Lakoma", "origin": 76, "destination": 80}
+{"pathId": 2, "pathName": "Lakoma-Neo Risio", "origin": 80, "destination": 76}
+{"pathId": 3, "pathName": "Flogita-Lakoma", "origin": 79, "destination": 80}
+{"pathId": 4, "pathName": "Lakoma-Flogita", "origin": 80, "destination": 79}
+{"pathId": 5, "pathName": "Flogita-Nea Moudania", "origin": 79, "destination": 81}
+{"pathId": 6, "pathName": "Nea Moudania-Flogita", "origin": 81, "destination": 79}
+{"pathId": 7, "pathName": "Nea Moudania-Afitos", "origin": 81, "destination": 78}
+{"pathId": 8, "pathName": "Afitos-Nea Moudania", "origin": 78, "destination": 81}
+{"pathId": 9, "pathName": "Nea Moudania-Gerakini", "origin": 81, "destination": 82}
+{"pathId": 10, "pathName": "Gerakini-Nea Moudania", "origin": 82, "destination": 81}
+{"pathId": 11, "pathName": "Gerakini-Nikiti", "origin": 82, "destination": 77}
+{"pathId": 12, "pathName": "Nikiti-Gerakini", "origin": 77, "destination": 82}
+{"pathId": 13, "pathName": "Flogita-Afitos", "origin": 79, "destination": 78}
+{"pathId": 14, "pathName": "Afitos-Flogita", "origin": 78, "destination": 79}
