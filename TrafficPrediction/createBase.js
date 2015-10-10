@@ -45,7 +45,7 @@ function cleanCreateLoadMode() {
     // Initialise base in clean create mode   
     var base = new qm.Base({
         mode: 'createClean', 
-        schemaPath: path.join(__dirname, './store.def'), // its more robust but, doesen't work from the console (doesent know __dirname)
+        //schemaPath: path.join(__dirname, './store.def'), // its more robust but, doesen't work from the console (doesent know __dirname)
         dbPath: path.join(__dirname, './db'),
     })
     
@@ -53,8 +53,14 @@ function cleanCreateLoadMode() {
     trafficExpert.init(base); //Initiate the traffic prediction workflow
     
     // Import initial data
-    qm.load.jsonFile(base.store("sensorsStore"), path.join(__dirname, "./sandbox/sensors.json"))
-    qm.load.jsonFile(base.store("rawStore"), path.join(__dirname, "./sandbox/data1.json"));
+    //qm.load.jsonFile(base.store("sensorsStore"), path.join(__dirname, "./sandbox/sensors.json"))
+    //qm.load.jsonFile(base.store("rawStore_1"), path.join(__dirname, "./sandbox/data1.json"));
+    qm.load.jsonFile(base.store("rawStore_1"), path.join(__dirname, "./sandbox/data_id1.json"));
+    qm.load.jsonFile(base.store("rawStore_3"), path.join(__dirname, "./sandbox/data_id3.json"));
+    qm.load.jsonFile(base.store("rawStore_4"), path.join(__dirname, "./sandbox/data_id4.json"));
+    qm.load.jsonFile(base.store("rawStore_11"), path.join(__dirname, "./sandbox/data_id11.json"));
+    qm.load.jsonFile(base.store("rawStore_12"), path.join(__dirname, "./sandbox/data_id12.json"));
+    
     logger.info("Training models...")
     
     debugger
