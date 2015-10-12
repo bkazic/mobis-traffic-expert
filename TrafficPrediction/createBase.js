@@ -63,8 +63,6 @@ function cleanCreateLoadMode() {
     
     logger.info("Training models...")
     
-    debugger
-
     return base;
 }
 

@@ -46,7 +46,7 @@ InfoTrip.prototype.pathData = function (callback) {
     });
 }
 
-//Example: http://localhost:8080/infotrip-wrapper/v1/infotrip/updatePathData
+//Example: http://tomcat.infotrip.gr/infotrip-wrapper/v1/infotrip/updatePathData
 InfoTrip.prototype.updatePathData = function (data, callback) {
     var url = this.routes["updatePathData"];
     //var url = "http://localhost:1338/traffic-predictions/add"
@@ -86,7 +86,7 @@ function makePostRequest(url, data, callback) {
             logger.error(err.stack);
             throw err;
         }
-        logger.info("Sucessfully posted data " + data + " at: " + url);
+        logger.info("Sucessfully posted data " + JSON.stringify(data) + " at: " + url);
         return callback(null, response, body)
     })
 };

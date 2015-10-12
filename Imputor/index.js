@@ -34,8 +34,8 @@ function cleanCreateMode() {
     if (typeof scriptArgs !== 'undefined') {
         qm.load.jsonFile(base.store("data"), path.join(__dirname, scriptArgs));
     } else {
-        sensorData.forEach(function (sensor) {
-            qm.load.jsonFile(base.store(sensor.name), sensor.filePath);
+    sensorData.forEach(function (sensor) { 
+        qm.load.jsonFile(base.store(sensor.name), sensor.filePath);
         })
     }
 
