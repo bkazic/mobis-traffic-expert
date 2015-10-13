@@ -1,0 +1,13 @@
+﻿{
+    "development": {
+        "trafficPredictionService": {
+			"root": "http://localhost:1338"
+        }
+    },
+    
+    "production": {
+        "trafficPredictionService": {
+			"root": "http://mustang.ijs.si:9570"
+        }
+    }
+}
