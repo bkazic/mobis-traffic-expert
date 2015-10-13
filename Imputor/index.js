@@ -1,7 +1,7 @@
 ﻿var qm = require('qminer');
 var path = require('path');
-var config = require('./config-debug.js');
-//var config = require('./config-release.js');
+var env = process.env.NODE_ENV || 'development';
+var config = require('./config.json')[env];
 var scriptArgs = process.argv[2];
 
 // Import my modules
@@ -9,7 +9,7 @@ Utils = require('./my_modules/utils/importData.js');
 DefineStores = require('./my_modules/utils/defineStores.js')
 
 sensorData = [
-    {id: 1, name: "rawStore_1", filePath: path.join(__dirname, "./sandbox/data_id1.json") },
+    { id: 1, name: "rawStore_1", filePath: path.join(__dirname, "./sandbox/data_id1.json") },
     { id: 3, name: "rawStore_3", filePath: path.join(__dirname, "./sandbox/data_id3.json") },
     { id: 4, name: "rawStore_4", filePath: path.join(__dirname, "./sandbox/data_id4.json") },
     { id: 11, name: "rawStore_11", filePath: path.join(__dirname, "./sandbox/data_id11.json") },
@@ -20,7 +20,6 @@ sensorData = [
 function cleanCreateMode() {
     
     // Init data base
-    //qm.delLock();
     var base = new qm.Base({
         mode: 'createClean', 
         //schemaPath: path.join(__dirname, './store.def'),
