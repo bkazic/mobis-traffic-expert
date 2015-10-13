@@ -64,8 +64,9 @@ Date.prototype.getDateString = function () {
 }
 
 // Constructor
-var CalendarFeatures = function () { 
-    this.SloHolidays = new SpecialDates('Slovenian_holidays')
+var CalendarFeatures = function () {
+    //this.Holidays = new SpecialDates('Slovenian_holidays');
+    this.Holidays = new SpecialDates('Greek_holidays'); // if it is used in Greek usecase
 }
 
 CalendarFeatures.prototype.getCalFtrs = function (rec) {
@@ -87,7 +88,7 @@ CalendarFeatures.prototype.isWeekend = function (rec) {
 }
 
 CalendarFeatures.prototype.isWorkingDay = function (rec) {
-    return (this.isWeekend(rec) || this.SloHolidays.getFeature(rec) === 1) ? 0 : 1;
+    return (this.isWeekend(rec) || this.Holidays.getFeature(rec) === 1) ? 0 : 1;
 }
 
 //module.exports = SpecialDates;
