@@ -1,4 +1,10 @@
-﻿// Import modules
+﻿/**
+ * This script simulates data flow from one sensors, 
+ * develops prediction models
+ * makes predictions and evaluates them
+*/
+
+// Import modules
 var qm = require('qminer');
 var path = require('path');
 var server = require('./server/server.js');
@@ -21,7 +27,7 @@ Model = require('./my_modules/utils/mobis-model/model.js');
 var base = new qm.Base({
     mode: 'createClean', 
     //schemaPath: path.join(__dirname, './store.def'), // its more robust but, doesen't work from the console (doesent know __dirname)
-    schemaPath: './store.def',
+    schemaPath: './store-old.def',
     //dbPath: path.join(__dirname, './db')
     dbPath: './db'
 })
