@@ -87,6 +87,7 @@ function makePostRequest(url, data, callback) {
             throw err;
         }
         logger.info("Sucessfully posted data " + JSON.stringify(data) + " at: " + url);
+        logger.info("\x1b[32m[InfoTrip] Response from InfoTrip: " + JSON.stringify(body) + "\x1b[0m");
         return callback(null, response, body)
     })
 };

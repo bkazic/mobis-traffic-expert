@@ -14,9 +14,9 @@ Utils.SpecialDates = require('./my_modules/utils/special-dates/special-dates.js'
 Utils.Helper = require('./my_modules/utils/helper.js');
 Utils.DefineStores = require('./my_modules/utils/define-stores/sensor-stores.js')
 Model = require('./my_modules/utils/mobis-model/model.js');
-//var InfoTripAPI = require('./InfoTrip/services.js')
-//InfoTrip.Services = new InfoTripAPI();
-InfoTrip.Services = new require('./InfoTrip/services.js')();
+var InfoTripAPI = require('./InfoTrip/services.js')
+InfoTrip.Services = new InfoTripAPI();
+//InfoTrip.Services = new require('./InfoTrip/services.js')();
 InfoTrip.Adapters = require('./InfoTrip/adapter.js');
 
 // Exports initialisation function
@@ -161,12 +161,13 @@ exports.init = function (base) {
                 var transformedRec = InfoTrip.Adapters.transform(rec);
                 // send data if env is 'production', or simulate if else
                 if (env === 'production') {
-                    InfoTrip.Services.updatePathData(rec, function (err, resp, body) {
+                    logger.debug("\x1b[32mSending record: " + JSON.stringify(transformedRec, null, 2) + "\x1b[0m");
+                    InfoTrip.Services.updatePathData(transformedRec, function (err, resp, body) {
                         if (err) throw err;
-                        logger.info("Response from InfoTrip: " + JSON.stringify(body));
                     });
                 } else {
-                    logger.info("[InfoTrip] Simulating sending prediction: " + JSON.stringify(transformedRec, null, 2))
+                    logger.info("\x1b[32m[InfoTrip] Simulating sending prediction: " + 
+                        JSON.stringify(transformedRec, null, 2) + "\x1b[0m")
                 }
             },
             saveJson: function () { return {} }
