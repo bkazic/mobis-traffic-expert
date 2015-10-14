@@ -6,7 +6,7 @@ SpecialDates = require('../special-dates/special-dates.js')
 LocalizedAverage = require('../baseline-models/localized-average.js')
 
 var analytics = qm.analytics;
-var specialDates = new SpecialDates.newSpecialDates('Slovenian_holidays');
+var specialDates = new SpecialDates.newSpecialDates('Greek_holidays');
 var CalendarFtrs = SpecialDates.newCalendarFeatures();
 
 createBuffers = function (horizons, store) {
