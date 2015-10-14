@@ -1,10 +1,11 @@
 {
   "name": "TrafficPrediction",
-  "version": "0.2.0",
-  "description": "TrafficPrediction",
+  "version": "0.3.0",
+  "description": "MobiS traffic expert scenario. Real time traffic forecasting by using Bluetooth data provided by partner InfoTrip.",
+  "license": "BSD-2-Clause-FreeBSD",
   "main": "server.js",
   "author": {
-    "name": "bkazic",
+    "name": "Blaz Kazic",
     "email": "blaz.kazic@ijs.si"
   },
   "repository": {

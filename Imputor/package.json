@@ -1,10 +1,11 @@
 {
   "name": "Imputor",
-  "version": "0.1.0",
-  "description": "Imputor",
+  "version": "0.2.0",
+  "description": "Data Imputor, for TrafficPrediction application",
+  "license": "BSD-2-Clause-FreeBSD",
   "main": "server.js",
   "author": {
-    "name": "bkazic",
+    "name": "Blaz Kazic",
     "email": "blaz.kazic@ijs.si"
   },  
   "repository": {
