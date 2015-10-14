@@ -3,6 +3,7 @@ var assert = require('assert');
 var env = process.env.NODE_ENV || 'test';
 
 describe('InfoTrip API test', function () {
+    this.timeout(10000); 
     baseUrl = "http://tomcat.infotrip.gr/infotrip-wrapper/v1/infotrip";
 
     //Example: http://tomcat.infotrip.gr/infotrip-wrapper/v1/infotrip/deviationData

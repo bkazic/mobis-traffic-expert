@@ -4,7 +4,6 @@ var logger = require("../my_modules/utils/logger/logger.js");
 // InforTrip API constructor
 function InfoTrip() {
     this.baseUrl = "http://tomcat.infotrip.gr/infotrip-wrapper/v1/infotrip";
-    http://tomcat.infotrip.gr/infotrip-wrapper/v1/infotrip/pathData
     this.routes = {
         latestReasoning: this.baseUrl + "/latestReasoning",
         pathData: this.baseUrl + "/pathData",
