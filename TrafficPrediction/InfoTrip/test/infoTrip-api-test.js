@@ -43,11 +43,11 @@ describe('InfoTrip API test', function () {
             .post("/updatePathData")
             .send({
                 "forecasts": [{
-                        "pathId": 3, "statisticalForecastValue": 3, 
+                        "pathId": 1, "statisticalForecastValue": 3, 
                         "timestamp": predTimestamp.toISOString()
                     }], 
                 "realValues": [{
-                        "pathId": 3, "realValue": 5, 
+                        "pathId": 1, "realValue": 5, 
                         "timestamp": timestamp.toISOString()
                     }]
             })

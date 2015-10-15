@@ -123,7 +123,7 @@ TrafficPredictionHandler.prototype.handleAddMeasurement = function (req, res) {
     trafficStore = this.base.store(storeName);
     if (trafficStore == null) {
         logger.warn("Store with name %s was not found. Cannot add record.", storeName);
-        res.status(500).json({error: "Store with name " + storeName + " was not found. Cannot add record."}).end();
+        res.status(500).json({error: "Store with pathId " + id + " was not found. Cannot add record."}).end();
         return;
     }
 

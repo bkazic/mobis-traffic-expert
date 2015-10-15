@@ -23,6 +23,7 @@ function setup(app, handlers) {
     // http://mustang.ijs.si:9570/traffic-predictions/0855-11
     app.get('/traffic-predictions/:id', handlers.trafficPrediction.handleGetTrafficPredictionsById.bind(handlers.trafficPrediction));
     
+    // http://mustang.ijs.si:9570/traffic-predictions/add
     // If you want to test from Simple REST Client, make sure you add in headers: Content-Type: application/json
     app.post('/traffic-predictions/add', handlers.trafficPrediction.handleAddMeasurement.bind(handlers.trafficPrediction));
 
