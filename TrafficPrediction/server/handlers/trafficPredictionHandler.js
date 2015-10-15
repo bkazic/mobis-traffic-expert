@@ -16,7 +16,7 @@ TrafficPredictionHandler.prototype.handleGetSensors = function (req, res) {
     catch (err) {
         if (typeof err.message != 'undefined' && err.message == "[addon] Exception: Base is closed!") {
             res.status(500).json({ error: "Base is closed!" });
-            logger.warn("Cannot execute. Base is closed!");
+            logger.warn("Cannot execute. Base is closed! " + err.stack);
         }
         else {
             res.status(500).json({ error: "Internal Server Error" });
@@ -44,7 +44,7 @@ TrafficPredictionHandler.prototype.handleGetTrafficPredictions = function (req, 
     catch (err) {
         if (typeof err.message != 'undefined' && err.message == "[addon] Exception: Base is closed!") {
             res.status(500).json({ error: "Base is closed!" });
-            logger.warn("Cannot execute. Base is closed!");
+            logger.warn("Cannot execute. Base is closed! " + err.stack);
         }
         else {
             res.status(500).json({ error: "Internal Server Error" });
@@ -73,7 +73,7 @@ TrafficPredictionHandler.prototype.handleGetTrafficPredictionsById = function (r
     catch (err) {
         if (typeof err.message != 'undefined' && err.message == "[addon] Exception: Base is closed!") {
             res.status(500).json({ error: "Base is closed!" });
-            logger.warn("Cannot execute. Base is closed!"); 
+            logger.warn("Cannot execute. Base is closed! " + err.stack); 
         }
         else {
             res.status(500).json({ error: "Internal Server Error" });
@@ -108,8 +108,8 @@ TrafficPredictionHandler.prototype.handleAddMeasurement = function (req, res) {
     }
     catch (err) {
         if (typeof err.message != 'undefined' && err.message.indexOf("Cannot read property") != -1) {
-            res.status(500).json({ error: "Record does not include property \"measuredBy\"" }).end();
-            logger.error("Record does not include property \"measuredBy\", from which the ID of the store can be found.");
+            res.status(500).json({ error: "Record does not include property 'Sensor'" }).end();
+            logger.error("Record does not include property 'Sensor', from which the 'pathId' can be found. " + err.stack);
             return;
         }
         else {
@@ -123,7 +123,7 @@ TrafficPredictionHandler.prototype.handleAddMeasurement = function (req, res) {
     trafficStore = this.base.store(storeName);
     if (trafficStore == null) {
         logger.warn("Store with name %s was not found. Cannot add record.", storeName);
-        res.status(500).json({error: "Store with name " + storeName + " was not found. Cannot add record."}).end();
+        res.status(500).json({error: "Store with pathId " + id + " was not found. Cannot add record."}).end();
         return;
     }
 

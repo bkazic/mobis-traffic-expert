@@ -3,6 +3,7 @@ var assert = require('assert');
 var env = process.env.NODE_ENV || 'test';
 
 describe('InfoTrip API test', function () {
+    this.timeout(10000); 
     baseUrl = "http://tomcat.infotrip.gr/infotrip-wrapper/v1/infotrip";
 
     //Example: http://tomcat.infotrip.gr/infotrip-wrapper/v1/infotrip/deviationData
@@ -42,11 +43,11 @@ describe('InfoTrip API test', function () {
             .post("/updatePathData")
             .send({
                 "forecasts": [{
-                        "pathId": 3, "statisticalForecastValue": 3, 
+                        "pathId": 1, "statisticalForecastValue": 3, 
                         "timestamp": predTimestamp.toISOString()
                     }], 
                 "realValues": [{
-                        "pathId": 3, "realValue": 5, 
+                        "pathId": 1, "realValue": 5, 
                         "timestamp": timestamp.toISOString()
                     }]
             })
