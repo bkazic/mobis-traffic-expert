@@ -156,12 +156,12 @@ exports.init = function (base) {
             name: "predictions",
             onAdd: function (rec) {
                 // check if prediction is actual, if not, exit from function
-                //if (rec.Predictions[0].PredictionTime < new Date()) return;
+                if (rec.Predictions[0].PredictionTime < new Date()) return;
                 // transform rec to InfoTrip format
                 var transformedRec = InfoTrip.Adapters.transform(rec);
                 // send data if env is 'production', or simulate if else
                 if (env === 'production') {
-                    logger.info("\x1b[32mSending record: " + JSON.stringify(transformedRec, null, 2) + "\x1b[0m");
+                    logger.debug("\x1b[32mSending record: " + JSON.stringify(transformedRec, null, 2) + "\x1b[0m");
                     InfoTrip.Services.updatePathData(transformedRec, function (err, resp, body) {
                         if (err) throw err;
                     });
