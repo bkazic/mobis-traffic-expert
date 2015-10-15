@@ -77,7 +77,7 @@ function makeGetRequest(url, callback) {
 // Make POST requests function
 function makePostRequest(url, data, callback) {
     request.post(url, { json: data }, function (error, response, body) {
-        logger.info("Send data to InfoTrip: " + +JSON.stringify(data) + " at: [POST] " + url)
+        logger.info("Send data to InfoTrip: " + JSON.stringify(data) + " at: [POST] " + url)
         if (error) {
             logger.error("Error at making request " + url + " \n" + error.stack);
             return callback(error);
