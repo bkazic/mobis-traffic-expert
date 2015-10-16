@@ -8,7 +8,7 @@
             }], 
         "realValues": [{
                 "pathId": rec.Sensor.pathId, 
-                "realValue": rec.AverageSpeed, 
+                "realValue": +rec.AverageSpeed.toFixed(1), 
                 "timestamp": rec.DateTime.toISOString()
             }]
     }
