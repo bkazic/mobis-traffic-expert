@@ -6077,3 +6077,16 @@ $RECYCLE.BIN/
 /Imputor/sandbox
 /TrafficPrediction/sandbox
 /TrafficPrediction/test/db3
+/Imputor/.ntvs_analysis.dat
+/Imputor/Imputor.njsproj
+/Imputor/config-debug.js
+/Imputor/config-release.js
+/Imputor/index-singleSensor.js
+/Imputor/sensors.def
+/Imputor/store.def
+/RealTimeImputor/.ntvs_analysis.dat
+/RealTimeImputor/RealTimeImputor.njsproj
+/RealTimeImputor/config-debug.js
+/RealTimeImputor/test.js
+/TODO.txt
+/TrafficExpert.sln
