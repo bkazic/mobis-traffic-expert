@@ -16,7 +16,8 @@ createSensorsStore = function (base) {
         "fields": [
             { "name": "DateTime", "type": "datetime", "primary": true },
             { "name": "TravelTime", "type": "float", "null": true },
-            { "name": "AverageSpeed", "type": "float", "null": true }
+            { "name": "AverageSpeed", "type": "float", "null": true },
+            { "name": "Count", "type": "float", "null": true }
         ],
         "joins": [
             { "name": "Sensor", "type": "field", "store": "sensorsStore"}
@@ -44,7 +45,8 @@ createMeasurementStores = function (base) {
                 "fields": [
                     { "name": "DateTime", "type": "datetime", "primary": true },
                     { "name": "TravelTime", "type": "float", "null": true },
-                    { "name": "AverageSpeed", "type": "float", "null": true }
+                    { "name": "AverageSpeed", "type": "float", "null": true },
+                    { "name": "Count", "type": "float", "null": true}
                 ],
                 "joins": [
                     { "name": "Sensor", "type": "field", "store": "sensorsStore" },

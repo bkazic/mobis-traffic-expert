@@ -143,9 +143,23 @@ exports.init = function (base) {
 
                 // analytics pipeline
                 mobisModel.predict(rec);
-                mobisModel.update(rec);
-                mobisModel.evaluate(rec);
+                //mobisModel.update(rec);
+                //mobisModel.evaluate(rec);
                 //mobisModel.consoleReport(rec);
+
+                // do not update if count=0 (means that data are set to average)
+                if (rawStore.last.Count != 0) {
+                    // do not update if the gap between last record and resampled record is bigger than 2 hours
+                    var lastId = (rawStore.length > 2) ? rawStore.length - 2 : 0
+                    if (rec.DateTime - rawStore[lastId].DateTime <= 2 * 60 * 60 * 1000) {
+                        mobisModel.update(rec);
+                    }
+
+                    mobisModel.update(rec);
+                    mobisModel.evaluate(rec);
+                    mobisModel.consoleReport(rec);
+                }
+
             },
             saveJson: function () { return {} }
         });

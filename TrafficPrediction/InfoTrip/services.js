@@ -77,7 +77,7 @@ function makeGetRequest(url, callback) {
 // Make POST requests function
 function makePostRequest(url, data, callback) {
     request.post(url, { json: data }, function (error, response, body) {
-        logger.info("Send data to InfoTrip: " + +JSON.stringify(data) + " at: [POST] " + url)
+        logger.info("Send data to InfoTrip: " + JSON.stringify(data) + " at: [POST] " + url)
         if (error) {
             logger.error("Error at making request " + url + " \n" + error.stack);
             return callback(error);
@@ -87,7 +87,7 @@ function makePostRequest(url, data, callback) {
             logger.error(err.stack);
             throw err;
         }
-        logger.info("Sucessfully posted data.");
+        logger.info("Sucessfully posted data: " + JSON.stringify(data));
         logger.info("\x1b[32m[InfoTrip] Response from InfoTrip: " + JSON.stringify(body) + "\x1b[0m");
         return callback(null, response, body)
     })

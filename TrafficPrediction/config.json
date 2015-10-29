@@ -18,8 +18,8 @@
     "production": {
         "trafficPredictionService": {
             "server": {
-				"root": "http://mustang.ijs.si:9570",
-                "port": 9570
+				"root": "http://localhost:1338",
+                "port": 1338
             }
         }, 
         "logger": {
