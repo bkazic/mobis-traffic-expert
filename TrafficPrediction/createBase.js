@@ -55,14 +55,17 @@ function cleanCreateLoadMode() {
     // Import initial data
     //qm.load.jsonFile(base.store("sensorsStore"), path.join(__dirname, "./sandbox/sensors.json"))
     //qm.load.jsonFile(base.store("rawStore_1"), path.join(__dirname, "./sandbox/data1.json"));
-    qm.load.jsonFile(base.store("rawStore_1"), path.join(__dirname, "./sandbox/data_id1.json"));
-    qm.load.jsonFile(base.store("rawStore_3"), path.join(__dirname, "./sandbox/data_id3.json"));
-    qm.load.jsonFile(base.store("rawStore_4"), path.join(__dirname, "./sandbox/data_id4.json"));
-    qm.load.jsonFile(base.store("rawStore_11"), path.join(__dirname, "./sandbox/data_id11.json"));
-    qm.load.jsonFile(base.store("rawStore_12"), path.join(__dirname, "./sandbox/data_id12.json"));
     
-    logger.info("Training models...")
+    //qm.load.jsonFile(base.store("rawStore_1"), path.join(__dirname, "./sandbox/data_id1.json"));
+    //qm.load.jsonFile(base.store("rawStore_3"), path.join(__dirname, "./sandbox/data_id3.json"));
+    //qm.load.jsonFile(base.store("rawStore_4"), path.join(__dirname, "./sandbox/data_id4.json"));
+    //qm.load.jsonFile(base.store("rawStore_11"), path.join(__dirname, "./sandbox/data_id11.json"));
+    //qm.load.jsonFile(base.store("rawStore_12"), path.join(__dirname, "./sandbox/data_id12.json"));
     
+    for (var id = 1; id < 15; id++) {
+        qm.load.jsonFile(base.store("rawStore_" + id), path.join(__dirname, "./sandbox/" + id + ".log"))
+    }
+
     return base;
 }
 
