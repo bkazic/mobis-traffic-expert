@@ -64,7 +64,7 @@ ServiceHandler.prototype.handleGetStoreRecs = function (req, res) {
         var thisStore = this.getBase().store(storeName);     
         // check if store was found
         if (thisStore == null) {
-            logger.warn("Store with name %s was not found.", storeName); console.log()
+            logger.warn("Store with name %s was not found.", storeName); 
             res.status(400).send({ error: "Store with name " + storeName + " was not found."});
             return;
         }
@@ -76,7 +76,7 @@ ServiceHandler.prototype.handleGetStoreRecs = function (req, res) {
         // check if any record was found
         if (recs['$hits'] === 0) {
             res.status(400).json({ error: "No records found" });
-            logger.warn("No records found"); console.log();
+            logger.warn("No records found"); 
             return;
         }
         
@@ -85,7 +85,7 @@ ServiceHandler.prototype.handleGetStoreRecs = function (req, res) {
     catch (err) {
         if (typeof err.message != 'undefined' && err.message == "[addon] Exception: Base is closed!") {
             res.status(500).json({ error: "Base is closed!" });
-            logger.warn("Cannot execute. Base is closed!"); console.log();
+            logger.warn("Cannot execute. Base is closed!");
         }
         else {
             res.status(500).json({ error: "Internal Server Error" });

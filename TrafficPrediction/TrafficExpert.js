@@ -113,7 +113,6 @@ TrafficExpert.prototype.initModels = function () {
             ]
         }
         
-        console.log() // just to create new line in console
         logger.info("[MobiS Model] Initializing MobiS model for sensor: " + sensorId);
         logger.info("[MobiS Model] SourceStore: " + modelConf.stores.sourceStore.name);
         logger.info("[MobiS Model] PredictionStore: " + modelConf.stores.predictionStore.name);
@@ -133,7 +132,6 @@ TrafficExpert.prototype.initAggregates = function () {
     //////// INIT STREAM AGGREGATES ////////
     this.sensorIds.forEach(function (sensorId) {
         
-        console.log()
         logger.info("[Stream Aggregate] Adding Stream Aggregates for sensor: " + sensorId);
         
         // Prepare store references
@@ -264,10 +262,10 @@ TrafficExpert.prototype.loadState = function (path) {
 
 TrafficExpert.prototype.shutdown = function () {
     // debugging purpuses - delete it later
-    logger.debug(JSON.stringify(this.mobisModels['1'].locAvrgs, false, 2))
-    logger.debug(JSON.stringify(this.mobisModels['1'].linregs, false, 2))
-    logger.debug(JSON.stringify(this.mobisModels['1'].recordBuffers, false, 2))
-    logger.debug(JSON.stringify(this.mobisModels['1'].errorModels, false, 2))
+    //logger.debug(JSON.stringify(this.mobisModels['1'].locAvrgs, false, 2))
+    //logger.debug(JSON.stringify(this.mobisModels['1'].linregs, false, 2))
+    //logger.debug(JSON.stringify(this.mobisModels['1'].recordBuffers, false, 2))
+    //logger.debug(JSON.stringify(this.mobisModels['1'].errorModels, false, 2))
     
     if (!this.base.isClosed()) {
         logger.info("Shutting down...");
@@ -308,7 +306,6 @@ TrafficExpert.prototype.backup = function (reopen) {
         debugger;
         this.loadState(this.pathDb); 
         //this.loadState(this.pathBackup); // this should load from pathBackup
-        console.log();
         logger.info("Model reopened.");
     }
 }
