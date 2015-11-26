@@ -2,8 +2,8 @@
 
 
 // Constructor
-var TrafficPredictionHandler = function (_base) {
-    this.base = _base;
+var TrafficPredictionHandler = function (trafficExpert) {
+    this.getBase = function () { return trafficExpert.base; };
 }
 
 
@@ -11,7 +11,7 @@ var TrafficPredictionHandler = function (_base) {
 TrafficPredictionHandler.prototype.handleGetSensors = function (req, res) {
     //res.status(501).json({ message: "Not implemented yet" })
     try {
-        res.status(200).json(this.base.store("sensorsStore").allRecords.toJSON().records);
+        res.status(200).json(this.getBase().store("sensorsStore").allRecords.toJSON().records);
     }
     catch (err) {
         if (typeof err.message != 'undefined' && err.message == "[addon] Exception: Base is closed!") {
@@ -29,7 +29,8 @@ TrafficPredictionHandler.prototype.handleGetSensors = function (req, res) {
 // Returns traffic prediction from all sensors
 TrafficPredictionHandler.prototype.handleGetTrafficPredictions = function (req, res) {
     var recs = [];
-    var base = this.base;
+    var base = this.getBase();
+    debugger
     try {
         base.getStoreList().forEach(function (storeNm) {
             if (storeNm.storeName.indexOf("resampledStore") != -1) {
@@ -60,7 +61,7 @@ TrafficPredictionHandler.prototype.handleGetTrafficPredictionsById = function (r
     id = id.replace("-", "_");
 
     try {
-        var store = this.base.store("resampledStore_" + id);
+        var store = this.getBase().store("resampledStore_" + id);
         
         // Return from function if store with particular sensor id was not found
         if (store.last == null) {
@@ -120,7 +121,7 @@ TrafficPredictionHandler.prototype.handleAddMeasurement = function (req, res) {
     
     // Find proper store
     var storeName = "rawStore_" + id;
-    trafficStore = this.base.store(storeName);
+    trafficStore = this.getBase().store(storeName);
     if (trafficStore == null) {
         logger.warn("Store with name %s was not found. Cannot add record.", storeName);
         res.status(500).json({error: "Store with pathId " + id + " was not found. Cannot add record."}).end();

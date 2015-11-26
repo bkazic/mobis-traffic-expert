@@ -7,7 +7,7 @@ var app = undefined;
 var server = undefined;
 
 // Initialize handlers and server route paths
-function init(base) {
+function init(trafficExpert) {
     var express = require('express');
     app = express();
     app.use(bodyParser.json());
@@ -17,8 +17,8 @@ function init(base) {
 
     // init handlers
     var handlers = {
-        service: new ServiceHandler(base, app),
-        trafficPrediction: new TrafficPredictionHandler(base)
+        service: new ServiceHandler(trafficExpert, app),
+        trafficPrediction: new TrafficPredictionHandler(trafficExpert)
     };
     
     // init routes

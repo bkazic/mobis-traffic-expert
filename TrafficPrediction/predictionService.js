@@ -1,54 +1,72 @@
 ﻿var qm = require('qminer');
-var trafficExpert = require('./TrafficExpert.js');
+var TrafficExpert = require('./TrafficExpert.js');
 var path = require('path');
 var logger = require("./my_modules/utils/logger/logger.js");
+Utils.Helper = require('./my_modules/utils/helper.js')
 
 // create Base in CLEAN CREATE mode
-function cleanCreateMode() {
+function cleanCreateMode(trafficExpert) {
     // Initialise base in clean create mode   
     var base = new qm.Base({
         mode: 'createClean', 
         //schemaPath: path.join(__dirname, './store.def'), // its more robust but, doesen't work from the console (doesent know __dirname)
-        dbPath: path.join(__dirname, './db'),
+        dbPath: trafficExpert.pathDb
     })
-    
+    base["mode"] = 'cleanCreate'
+
     // Init traffic prediction work flow
     trafficExpert.init(base); //Initiate the traffic prediction workflow
     
     // Import sensor data
     //qm.load.jsonFile(base.store("sensorsStore"), path.join(__dirname, "./sandbox/sensors.json"))
-
-    return base;
 }
 
 // create Base in OPEN mode
-function openMode() {
+function openMode(trafficExpert) {
     var base = new qm.Base({
         mode: 'open',
-        //dbPath: path.join(__dirname, './db') //If the code is copied in terminal, this has to commented out, since __dirname is not known from terminal
+        dbPath: trafficExpert.pathDb //If the code is copied in terminal, this has to commented out, since __dirname is not known from terminal
     })
-    trafficExpert.init(base); //Initiate the traffic prediction workflow
-    return base;
+    base["mode"] = 'open'
+
+    //Initiate the traffic prediction workflow
+    trafficExpert.init(base);
+    // load saved models
+    trafficExpert.loadState();
 }
 
 // create Base in READ ONLY mode
-function readOnlyMode() {
+function readOnlyMode(trafficExpert) {
     var base = new qm.Base({
         mode: 'openReadOnly',
-        dbpath: path.join(__dirname, './db')
+        dbpath: trafficExpert.pathDb 
     })
-    return base;
+    
+    //Initiate the traffic prediction workflow
+    trafficExpert.init(base);
+    
+    // load saved models
+    trafficExpert.loadState();
+}
+
+function restoreFromBackup(trafficExpert) {
+    // copy db from backup to db
+    Utils.Helper.copyFolder(trafficExpert.pathBackup, trafficExpert.pathDb);
+    
+    // call openMode()
+    openMode(trafficExpert);
 }
 
 // create Base in CLEAN CREATE mode and load init data
-function cleanCreateLoadMode() {
+function cleanCreateLoadMode(trafficExpert) {
     // Initialise base in clean create mode   
     var base = new qm.Base({
         mode: 'createClean', 
         //schemaPath: path.join(__dirname, './store.def'), // its more robust but, doesen't work from the console (doesent know __dirname)
-        dbPath: path.join(__dirname, './db'),
+        dbPath: trafficExpert.pathDb 
     })
-    
+    base["mode"] = 'cleanCreateLoad'
+
     // Init traffic prediction work flow
     trafficExpert.init(base); //Initiate the traffic prediction workflow
     
@@ -65,32 +83,39 @@ function cleanCreateLoadMode() {
     for (var id = 1; id < 15; id++) {
         qm.load.jsonFile(base.store("rawStore_" + id), path.join(__dirname, "./sandbox/" + id + ".log"))
     }
-
-    return base;
 }
 
 // function that handles in which mode store should be opened
-function createBase(mode) {
+function start(trafficExpert, mode) {
     var modes = {
         'cleanCreate': cleanCreateMode,
         'cleanCreateLoad': cleanCreateLoadMode,
         'open': openMode,
-        'openReadOnly': readOnlyMode
+        'openReadOnly': readOnlyMode,
+        'restoreFromBackup': restoreFromBackup
     };
     
     // check if mode type is valid
     if (typeof modes[mode] === 'undefined') {
-        throw new Error("Base mode '" + mode + "' does not exist!" + 
-            "Use one of this: 'cleanCreate', 'cleanCreateLoad', 'open', 'openReadOnly'")
+        modeOptions = [];
+        for (option in modes) {
+            modeOptions.push(option);
+        }
+        
+        throw new Error("Base mode '" + mode + "' does not exist! Use one of this: " + modeOptions.toString())
     }
-    
+
     // run appropriate function
-    var base = modes[mode]();
-    base["mode"] = mode;
+    modes[mode](trafficExpert);
+    
+    //// schedule backuping and partialFlush-ing
+    //setInterval(function () { base.partialFlush() }, 10 * 60 * 1000);
+    setInterval(function () { trafficExpert.backup(true); }, 10 * 1000);
+    
+    // create backup before running server
+    //trafficExpert.backup(true);
     
     logger.info("\x1b[32m[Model] Service started in '%s' mode\n\x1b[0m", mode)
-    
-    return base;
 }
 
-exports.mode = createBase;
+exports.start = start;

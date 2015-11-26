@@ -1,8 +1,8 @@
 ﻿var logger = require("../../my_modules/utils/logger/logger.js");
 
 // Constructor
-function ServiceHandler(base, app) {
-    this.base = base;
+function ServiceHandler(trafficExpert, app) {
+    this.getBase = function () { return trafficExpert.base; };
     this.app = app;
 }
 
@@ -21,7 +21,7 @@ ServiceHandler.prototype.handleGetRouterPaths = function (req, res) {
 // close Base
 ServiceHandler.prototype.handleCloseBase = function (req, res) {
     try {
-        this.base.close();
+        this.getBase().close();
         res.status(200).json({ message: "Base closed" });
     }
     catch (err) {
@@ -39,7 +39,7 @@ ServiceHandler.prototype.handleCloseBase = function (req, res) {
 // Returns list of all store names
 ServiceHandler.prototype.handleGetStoreList = function (req, res) {
     try {
-        var storeList = this.base.getStoreList().map(function (store) { return store.storeName });
+        var storeList = this.getBase().getStoreList().map(function (store) { return store.storeName });
         res.status(200).json(storeList);
     }
     catch (err) {
@@ -61,7 +61,7 @@ ServiceHandler.prototype.handleGetStoreRecs = function (req, res) {
     var recs = [];
 
     try {
-        var thisStore = this.base.store(storeName);     
+        var thisStore = this.getBase().store(storeName);     
         // check if store was found
         if (thisStore == null) {
             logger.warn("Store with name %s was not found.", storeName); console.log()

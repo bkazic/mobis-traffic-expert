@@ -1,44 +1,54 @@
 ﻿{
-    "development": {
-        "trafficPredictionService": {
-            "server": {
-				"root": "http://localhost:1338",
-                "port": 1338
-            }
-        },
-        "admins": {
-            "foo": { "password": "bar" },
-            "admin": { "password": "admin" }
-        },
-        "logger": {
-            "console": { "level": "debug" }
-        }
-    },
-    
-    "production": {
-        "trafficPredictionService": {
-            "server": {
-				"root": "http://localhost:1338",
-                "port": 1338
-            }
-        }, 
-        "logger": {
-            "console": { "level": "info" }
-        }
-    },
-
-	"test": {
-        "trafficPredictionService": {
-            "server": {
-				"root": "http://localhost:3333",
-                "port": 3333
-            }
-        }, 
-		"admins": {
-            "test": { "password": "test" }
-        },
-        "logger": {
-            "console": { "level": "error" }
-        }
-    }
+   "development":{
+      "trafficPredictionService":{
+         "server":{
+            "root":"http://localhost:1338",
+            "port":1338
+         }
+      },
+      "admins":{
+         "foo":{
+            "password":"bar"
+         },
+         "admin":{
+            "password":"admin"
+         }
+      },
+      "logger":{
+         "console":{
+            "level":"debug"
+         }
+      }
+   },
+   "production":{
+      "trafficPredictionService":{
+         "server":{
+            "root":"http://localhost:1338",
+            "port":1338
+         }
+      },
+      "logger":{
+         "console":{
+            "level":"info"
+         }
+      }
+   },
+   "test":{
+      "trafficPredictionService":{
+         "server":{
+            "root":"http://localhost:3333",
+            "port":3333
+         }
+      },
+      "admins":{
+         "test":{
+            "password":"test"
+         }
+      },
+      "logger":{
+         "console":{
+            "level":"error"
+         }
+      }
+   }
 }

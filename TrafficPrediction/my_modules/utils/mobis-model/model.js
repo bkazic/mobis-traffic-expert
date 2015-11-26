@@ -1,6 +1,7 @@
 //Imports
 var qm = require('qminer');
 var logger = require("../logger/logger.js");
+var path = require('path');
 
 SpecialDates = require('../special-dates/special-dates.js')
 LocalizedAverage = require('../baseline-models/localized-average.js')
@@ -9,81 +10,10 @@ var analytics = qm.analytics;
 var specialDates = new SpecialDates.newSpecialDates('Greek_holidays');
 var CalendarFtrs = SpecialDates.newCalendarFeatures();
 
-createBuffers = function (horizons, store) {
-    // Initialize RecordBuffers definiton for all horizons 
-    RecordBuffers = [];
-    for (var horizon in horizons) {
-        recordBuffer = {
-            name: "delay_" + horizons[horizon] + "h",
-            type: "recordBuffer",
-            horizon: horizons[horizon] + 1
-        };
-        RecordBuffers.push(recordBuffer);
-    };
-
-    // Execute buffer agregates for all horizons
-    for (var horizon in horizons) {
-        var RecordBuffer = RecordBuffers[horizon];
-
-        store.addStreamAggr({
-            name: RecordBuffer.name, type: RecordBuffer.type, size: RecordBuffer.horizon
-        });
-    };
-    return RecordBuffers;
-};
-
-createAvrgModels = function (targetFields) {
-    // create set of locAvr models, for every target field
-    var avrgs = [];
-    targetFields.forEach(function (target, targetIdx) {
-        avrgs[targetIdx] = new LocalizedAverage({ fields: target.field });
-        avrgs[targetIdx]["predictionField"] = target.field.name;
-    })
-    return avrgs;
-}
-
-createLinRegModels = function (fields, horizons, ftrSpace) {
-    // create set of linear regression models 
-    var linregs = []; // this will be array of objects
-    for (var field in fields) { // models for prediction fields
-        linregs[field] = [];
-        linregs[field]["Model"] = { "field": fields[field].field.name };
-        for (var horizon in horizons) { // models for horizons
-            linregs[field][horizon] = [];
-            linregs[field][horizon]["Model"] = { "horizon": horizons[horizon] };
-            for (var i = 0; i < 2; i++) { // 2 models: working day or not
-                linregs[field][horizon][i] = [];
-                linregs[field][horizon][i]["Model"] = { "WorkingDay": Boolean(i) }
-                for (var j = 0; j < 24; j++) { // 24 models: for every hour in day
-                    linregs[field][horizon][i][j] = new analytics.RecLinReg({ "dim": ftrSpace.dim, "forgetFact": 1, "regFact": 10000 });
-                    linregs[field][horizon][i][j]["predictionField"] = fields[field].field.name;
-                    linregs[field][horizon][i][j]["horizon"] = horizons[horizon];
-                    linregs[field][horizon][i][j]["workingDay"] = i; // asign new field "workingDay" to model (just for demonstrational use)
-                    linregs[field][horizon][i][j]["forHour"] = j; // asign new field "forHour" to model (just for demonstrational use)
-                    linregs[field][horizon][i][j]["updateCount"] = 0; // how many times model was updated (just for demonstrational use)
-                }
-            }
-        }
-    }
-    return linregs;
-};
-
-createErrorModels = function (fields, horizons, errMetrics) {
-    var errorModels = [];
-    for (var field in fields) {
-        errorModels[field] = [];
-        for (var horizon in horizons) {
-            errorModels[field][horizon] = [];
-            for (var errMetric in errMetrics) {
-                errorModels[field][horizon][errMetric] = errMetrics[errMetric].constructor();
-                errorModels[field][horizon][errMetric]["MetricName"] = errMetrics[errMetric].name;
-                errorModels[field][horizon][errMetric]["PredictionField"] = fields[field].field.name;
-            };
-        };
-    }
-    return errorModels;
-};
-
+var modelBuffers = require('./submodels/model-buffers.js');
+var modelErrors = require('./submodels/model-errors.js');
+var modelAverages = require('./submodels/model-averages.js');
+var modelLinRegs = require('./submodels/model-linregs.js');
 
 ///////////////////////////////// 
 // LOCALIZED LINEAR REGRESSION //
@@ -91,8 +21,9 @@ createErrorModels = function (fields, horizons, errMetrics) {
 
 //function Model(modelConf) {
 var Model = function (modelConf) {
-    this.modelConf = modelConf
+    this.modelConf = modelConf;
     this.base = modelConf.base;
+    this.sensorId = modelConf.sensorId;
     this.avrVal = modelConf.locAvr;
     this.horizons = (modelConf.predictionHorizons == null) ? 1 : modelConf.predictionHorizons;
     //this.featureSpace = modelConf.featureSpace; // TODO: what to do if it is not defined (if it is null) ?????
@@ -101,15 +32,16 @@ var Model = function (modelConf) {
     this.predictionStore = modelConf.stores.predictionStore;
     this.evaluationStore = modelConf.stores.evaluationStore;
     this.target = modelConf.target.name;
-    this.predictionFields = modelConf.predictionFields;  
-    this.targets = this.predictionFields.map(function (target) { return target.field.name})
+    this.predictionFields = modelConf.predictionFields;
+    this.targets = this.predictionFields.map(function (target) { return target.field.name })
     this.evalOffset = (modelConf.otherParams.evaluationOffset == null) ? 50 : modelConf.otherParams.evaluationOffset;
     this.errorMetrics = modelConf.errorMetrics;
-
-    this.recordBuffers = createBuffers(this.horizons, this.store);
-    this.locAvrgs = createAvrgModels(this.predictionFields);
-    this.linregs = createLinRegModels(this.predictionFields, this.horizons, this.featureSpace)
-    this.errorModels = createErrorModels(this.predictionFields, this.horizons, this.errorMetrics);
+    
+    this.recordBuffers = modelBuffers.create(this.horizons, this.store);
+    this.locAvrgs = modelAverages.create(this.predictionFields);
+    this.linregs = modelLinRegs.create(this.predictionFields, this.horizons, this.featureSpace)
+    this.errorModels = modelErrors.create(this.predictionFields, this.horizons, this.errorMetrics)
+    this.resampler;
 }
 
 Model.prototype.update = function (rec) {
@@ -121,8 +53,9 @@ Model.prototype.update = function (rec) {
         
         for (var horizonIdx in this.horizons) {
             // Get rec for training
-            //var trainRecId = rec.$store.getStreamAggr(RecordBuffers[horizonIdx].name).val.oldest.$id; //OLD
-            var trainRecId = rec.$store.getStreamAggr(RecordBuffers[horizonIdx].name).val.oldest.$id;
+            //var trainRecId = rec.$store.getStreamAggr(this.recordBuffers[horizonIdx].name).val.oldest.$id;
+            var trainRecId = this.recordBuffers[this.horizons[horizonIdx]].val.oldest.$id;
+            // New: var trainRecId = this.recordBuffers.buffers[horizonIdx].val.odlest.$id;
             
             if (trainRecId > 0) {
                 
@@ -135,8 +68,8 @@ Model.prototype.update = function (rec) {
                 //trainRec.Predictions[horizonIdx].Target = targetVal; //TODO: Make a join!!!!!
                 
                 try {
-                    trainRec.Predictions[horizonIdx].$addJoin("Target", rec); 
-                } catch (err) { 
+                    trainRec.Predictions[horizonIdx].$addJoin("Target", rec);
+                } catch (err) {
                     throw new Error(err + ". Use model.predict(rec) first!")
                     logger.error(err.stack);
                 }
@@ -155,13 +88,14 @@ Model.prototype.update = function (rec) {
 }
 
 Model.prototype.predict = function (rec) {
-        
+    
     var predictionRecs = [];
-        
+    
     for (var horizonIdx in this.horizons) {
         // Get rec for training
-        var trainRecId = rec.$store.getStreamAggr(RecordBuffers[horizonIdx].name).val.oldest.$id;
-            
+        //var trainRecId = rec.$store.getStreamAggr(this.recordBuffers[horizonIdx].name).val.oldest.$id;
+        var trainRecId = this.recordBuffers[this.horizons[horizonIdx]].val.oldest.$id;
+        
         // Get prediction interval and time
         var predInter = Math.abs(rec.DateTime - rec.$store[trainRecId].DateTime);
         var predTime = new Date(rec.DateTime.getTime() + predInter);
@@ -169,19 +103,20 @@ Model.prototype.predict = function (rec) {
         // Select correct linregs model
         var hour = rec.DateTime.getUTCHours();
         var work = CalendarFtrs.isWorkingDay(rec);
-            
+        
         // Create prediction record
         var predictionRec = {};
         predictionRec.OriginalTime = rec.DateTime.toISOString(); //predictionRec.OriginalTime = rec.DateTime.string;
         predictionRec.PredictionTime = predTime.toISOString(); //predictionRec.PredictionTime = predTime.string;
-        predictionRec.PredictionHorizon = RecordBuffers[horizonIdx].horizon - 1;
+        //predictionRec.PredictionHorizon = this.recordBuffers[horizonIdx].horizon - 1;
+        predictionRec.PredictionHorizon = this.horizons[horizonIdx];
         predictionRec.UpdateCount = this.linregs[0][horizonIdx][work][hour].updateCount;
-            
+        
         for (var predictionFieldIdx in this.predictionFields) {
             var linreg = this.linregs[predictionFieldIdx][horizonIdx][work][hour];
             var locAvrg = this.locAvrgs[predictionFieldIdx];
             var predictionFieldName = this.predictionFields[predictionFieldIdx].field.name;
-                
+            
             this.avrVal.setVal(locAvrg.getVal({ "DateTime": predTime }));
             try {
                 predictionRec[predictionFieldName] = linreg.predict(this.featureSpace.extractVector(rec));
@@ -190,10 +125,10 @@ Model.prototype.predict = function (rec) {
                 logger.error(err.stack);
             }
         }
-            
+        
         // Add prediction record to predictions array
         predictionRecs.push(predictionRec);
-            
+        
         this.predictionStore.push(predictionRec);
         rec.$addJoin("Predictions", this.predictionStore.last);
     };
@@ -203,10 +138,11 @@ Model.prototype.predict = function (rec) {
 Model.prototype.evaluate = function (rec) {
     
     if (rec.$id < this.evalOffset) return; // If condition is true, stop function here.
-        
+    
     for (var horizonIdx in this.horizons) {
-            
-        var trainRecId = rec.$store.getStreamAggr(RecordBuffers[horizonIdx].name).val.oldest.$id;
+        
+        //var trainRecId = rec.$store.getStreamAggr(this.recordBuffers[horizonIdx].name).val.oldest.$id;
+        var trainRecId = this.recordBuffers[this.horizons[horizonIdx]].val.oldest.$id;
         var trainRec = rec.$store[trainRecId]
         
         for (var errorMetricIdx in this.errorMetrics) {
@@ -219,7 +155,7 @@ Model.prototype.evaluate = function (rec) {
                 var errorModel = this.errorModels[predictionFieldIdx][horizonIdx][errorMetricIdx];
                 var prediction = trainRec.Predictions[horizonIdx][predictionFieldName];
                 // update model and write to errRec
-                errorModel.update(rec[predictionFieldName], prediction);
+                errorModel.push(rec[predictionFieldName], prediction);
                 errRec[predictionFieldName] = errorModel.getError();
             }
             
@@ -231,7 +167,7 @@ Model.prototype.evaluate = function (rec) {
 }
 
 Model.prototype.consoleReport = function (rec) {
-    // TODO
+    // TODO: use logger instad of console.log
     
     if (rec.$id < this.evalOffset) return; // If condition is true, stop function here.
     
@@ -241,9 +177,11 @@ Model.prototype.consoleReport = function (rec) {
         rec.DateTime);
     }
     
+    
     for (horizonIdx in this.horizons) {
         
-        var trainRecId = rec.$store.getStreamAggr(RecordBuffers[horizonIdx].name).val.oldest.$id;
+        //var trainRecId = rec.$store.getStreamAggr(this.recordBuffers[horizonIdx].name).val.oldest.$id;
+        var trainRecId = this.recordBuffers[this.horizons[horizonIdx]].val.oldest.$id;
         var trainRec = rec.$store[trainRecId]
         
         // Only one report per day
@@ -256,14 +194,14 @@ Model.prototype.consoleReport = function (rec) {
         
         // Report current predictions in the console
         console.log("\n=== Predictions ===\n");
-        console.log("Predictions for PathId: " + rec.Sensor.pathId);
+        console.log("Predictions for Sensor ID: " + rec.Sensor.pathId);
         console.log("Update count: " + trainRec.Predictions[horizonIdx].UpdateCount + "\n")
         console.log("Working on rec: " + rec.DateTime.toISOString());
         console.log("Prediction from: " + trainRec.Predictions[horizonIdx].OriginalTime.toISOString()); // Same as trainRec.DateTime.string             
         console.log("Prediction horizon: " + trainRec.Predictions[horizonIdx].PredictionHorizon)
         //console.log("Target: " + rec[this.target.name]); 
         //console.log(this.target.name + ": " + trainRec.Predictions[horizonIdx][this.target.name]);
-
+        
         // report predicted values
         console.log("\n--> Predicted values:");
         this.predictionFields.forEach(function (predField) {
@@ -283,8 +221,40 @@ Model.prototype.consoleReport = function (rec) {
                 console.log("\t" + predFieldNm + ": " + errorValue);
             });
         };
+        
     }
      
+}
+
+Model.prototype.save = function (dirName) {
+    // if sensorId is defined create a subdirectory undefined 
+    if (typeof this.sensorId !== 'undefined') { dirName = path.join(dirName, this.sensorId) };
+    
+    modelBuffers.save(this.recordBuffers, dirName);
+    modelErrors.save(this.errorModels, this.predictionFields, this.horizons, this.errorMetrics, dirName);
+    modelAverages.save(this.locAvrgs, this.predictionFields, dirName);
+    modelLinRegs.save(this.linregs, this.predictionFields, this.horizons, dirName);
+    
+    var fout = new qm.fs.FOut(path.join(dirName, this.resampler.name));
+    this.resampler.save(fout);
+    fout.flush();
+    fout.close();
+    logger.info('Saved resampler aggregate')
+}
+
+Model.prototype.load = function (dirName) {
+    // if sensorId is defined create a subdirectory undefined 
+    if (typeof this.sensorId !== 'undefined') { dirName = path.join(dirName, this.sensorId) }    ;
+    
+    modelBuffers.load(this.recordBuffers, dirName);
+    modelErrors.load(this.errorModels, this.predictionFields, this.horizons, this.errorMetrics, dirName);
+    modelAverages.load(this.locAvrgs, this.predictionFields, dirName);
+    modelLinRegs.load(this.linregs, this.predictionFields, this.horizons, dirName);
+    
+    var fin = new qm.fs.FIn(path.join(dirName, this.resampler.name));
+    this.resampler.load(fin);
+    fin.close();
+    logger.info('Loaded resampler aggregate')
 }
 
 // Exports
