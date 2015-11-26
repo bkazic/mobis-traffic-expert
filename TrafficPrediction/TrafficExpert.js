@@ -153,11 +153,14 @@ exports.init = function (base) {
                     var lastId = (rawStore.length > 2) ? rawStore.length - 2 : 0
                     if (rec.DateTime - rawStore[lastId].DateTime <= 2 * 60 * 60 * 1000) {
                         mobisModel.update(rec);
+                        mobisModel.evaluate(rec);
                     }
 
-                    mobisModel.update(rec);
-                    mobisModel.evaluate(rec);
-                    mobisModel.consoleReport(rec);
+                    //mobisModel.update(rec); // this probably shouldnt be here
+                    //mobisModel.evaluate(rec); // this probably shouldnt be here 
+                    
+                    // report to console only if we are in development env
+                    if (env === 'development') mobisModel.consoleReport(rec);
                 }
 
             },
@@ -172,6 +175,11 @@ exports.init = function (base) {
                 // check if prediction is actual, if not, exit from function
                 if (rec.Predictions[0].PredictionTime < new Date()) return;
                 // transform rec to InfoTrip format
+                
+                // TODO:
+                // poslji napovedi samo ce si dobil last.Count != 0, drugace poslji free flow
+                // mogoce lahko to nardis v naslednji funkciji?
+
                 var transformedRec = InfoTrip.Adapters.transform(rec);
                 // send data if env is 'production', or simulate if else
                 if (env === 'production') {

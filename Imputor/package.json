@@ -7,10 +7,13 @@
   "author": {
     "name": "Blaz Kazic",
     "email": "blaz.kazic@ijs.si"
-  },  
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/bkazic/mobis-traffic-expert"
+  },
+  "scripts": {
+    "start": "node index.js"
   },
   "dependencies": {
     "qminer": "^2.5.0",
