@@ -7,7 +7,7 @@
     
     "production": {
         "trafficPredictionService": {
-			"root": "http://mustang.ijs.si:9570"
+			"root": "http://mustang.ijs.si:9571"
         }
     }
 }

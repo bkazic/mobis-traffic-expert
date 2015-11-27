@@ -16,6 +16,12 @@ sensorData = [
     { id: 12, name: "rawStore_12", filePath: path.join(__dirname, "./sandbox/data_id12.json") }
 ]
 
+// read files from sandbox (1.log to 14.log)
+var sensorData = [];
+for (var id = 1; id < 15; id++) { 
+    sensorData.push({'id': id, 'name': "rawStore_" + id, filePath: path.join(__dirname, "./sandbox/" + id + ".log")})
+}
+
 // create Base in CLEAN CREATE mode
 function cleanCreateMode() {
     
@@ -68,4 +74,3 @@ var url = config.trafficPredictionService.root + "/traffic-predictions/add";
 //Utils.importData(url, [base.store('data')], [base.store('data')])
 //Utils.importData(url, [base.store('data')], [base.store('data')],100)
 Utils.importData(url, sensorData.map(function (sensor) { return base.store(sensor.name) }), [])
-
