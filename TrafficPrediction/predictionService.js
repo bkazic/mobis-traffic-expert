@@ -115,7 +115,7 @@ function start(trafficExpert, mode) {
     // create backup before running server
     //trafficExpert.backup(true);
     
-    logger.info("\x1b[32m[Model] Service started in '%s' mode\n\x1b[0m", mode)
+    logger.info("\x1b[32m[Model] Service started in '%s' mode\n\x1b[0m", mode);
 }
 
 exports.start = start;
