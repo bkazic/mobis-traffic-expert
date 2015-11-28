@@ -110,10 +110,10 @@ function start(trafficExpert, mode) {
     
     //// schedule backuping and partialFlush-ing
     //setInterval(function () { base.partialFlush() }, 10 * 60 * 1000);
-    setInterval(function () { trafficExpert.backup(true); }, 10 * 1000);
+    //setInterval(function () { trafficExpert.backup(true); }, 10 * 1000);
     
     // create backup before running server
-    //trafficExpert.backup(true);
+    trafficExpert.backup(true);
     
     logger.info("\x1b[32m[Model] Service started in '%s' mode\n\x1b[0m", mode);
 }
