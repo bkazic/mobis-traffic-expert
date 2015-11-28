@@ -1,7 +1,7 @@
 ﻿// Import modules
 var qm = require('qminer');
 var path = require('path');
-var evaluation = require('./my_modules/utils/online-evaluation/evaluation.js') // Delete this later
+var evaluation = qm.analytics.metrics;
 var logger = require("./my_modules/utils/logger/logger.js");
 var env = process.env.NODE_ENV || 'development';
 var config = require('./config.json')[env];
@@ -19,30 +19,56 @@ InfoTrip.Services = new InfoTripAPI();
 //InfoTrip.Services = new require('./InfoTrip/services.js')();
 InfoTrip.Adapters = require('./InfoTrip/adapter.js');
 
-// Exports initialisation function
-exports.init = function (base) {
-    
-    //////// INIT STORES ////////
-    var sensorsStore = Utils.DefineStores.createSensorsStore(base);
-    var measurementStores = Utils.DefineStores.createMeasurementStores(base);
-    
+var TrafficExpert = function () {
+    this.base;
+    this.mobisModels = {};
+    this.sensorIds;
+    this.stores;
+    this.pathDb = path.join(__dirname, './db');
+    this.pathBackup = path.join(__dirname, './backup')
+}
 
+TrafficExpert.prototype.init = function (base) {
+    this.initStores(base);
+    this.initModels();
+    this.initAggregates();
+}
+
+TrafficExpert.prototype.initStores = function (base) {
+    //////// INIT STORES ////////
+    this.base = base;
+
+    // create schema if not in open or openReadOnly' mode
+    var sensorsStore = Utils.DefineStores.createSensorsStore(base);
+    this.stores = Utils.DefineStores.createMeasurementStores(base);
+    
+    // sensor ids
+    this.sensorIds = sensorsStore.map(function (sensor) { return sensor.pathId.toString() })
+    
+    // shutdown properly when service is closed
+    process.on('SIGINT', function () { this.shutdown(); this.backup(); process.exit(); }.bind(this));
+    process.on('SIGHUP', function () { this.shutdown(); this.backup(); process.exit(); }.bind(this));
+    process.on('uncaughtException', function () { this.shutdown(); this.backup(); process.exit(); }.bind(this));
+}
+
+
+TrafficExpert.prototype.initModels = function () {
     //////// INIT MOBIS MODELS ////////
     // This is used by feature extractor, and updated from MobisModel
     var avrVal = Utils.Helper.newDummyModel();
-    var mobisModels = {};
-
-    sensorsStore.each(function (sensor) {
+    
+    this.sensorIds.forEach(function (sensorId) {
         
         // Prepare store references
-        var rawStore = measurementStores.rawStores[sensor.pathId]
-        var resampledStore = measurementStores.resampledStores[sensor.pathId]
-        var predictionStore = measurementStores.predictionStores[sensor.pathId]
-        var evaluationStore = measurementStores.evaluationStores[sensor.pathId]
-        
+        var rawStore = this.stores.rawStores[sensorId]
+        var resampledStore = this.stores.resampledStores[sensorId]
+        var predictionStore = this.stores.predictionStores[sensorId]
+        var evaluationStore = this.stores.evaluationStores[sensorId]
+       
         // Define model configurations
         var modelConf = {
-            base: base,
+            base : this.base,
+            sensorId: sensorId,
             locAvr: avrVal, // Not sure if this is ok, has to be debuged
             stores: {
                 "sourceStore": resampledStore,
@@ -72,24 +98,25 @@ exports.init = function (base) {
             
             otherParams: {
                 // This are optional parameters
-                evaluationOffset: 50, // It was 50 before
+                evaluationOffset: 10, // It was 50 before
             },
             
             predictionHorizons: [1],
+            //predictionHorizons: horizons,
             
             //recLinRegParameters: { "dim": ftrSpace.dim, "forgetFact": 1, "regFact": 10000 }, // Not used yet. //Have to think about it how to use this
             errorMetrics: [
-                { name: "MAE", constructor: function () { return evaluation.newMeanAbsoluteError() } },
-                { name: "RMSE", constructor: function () { return evaluation.newRootMeanSquareError() } },
-                { name: "MAPE", constructor: function () { return evaluation.newMeanAbsolutePercentageError() } },
-                { name: "R2", constructor: function () { return evaluation.newRSquareScore() } }
+                { name: "MAE", constructor: function () { return new evaluation.MeanAbsoluteError() } },
+                { name: "RMSE", constructor: function () { return new evaluation.RootMeanSquareError() } },
+                { name: "MAPE", constructor: function () { return new evaluation.MeanAbsolutePercentageError() } },
+                { name: "R2", constructor: function () { return new evaluation.R2Score() } }
             ]
         }
-
-        logger.info("[MobiS Model] Initializing MobiS model for sensor: " + sensor.pathId);
+        
+        logger.info("[MobiS Model] Initializing MobiS model for sensor: " + sensorId);
         logger.info("[MobiS Model] SourceStore: " + modelConf.stores.sourceStore.name);
         logger.info("[MobiS Model] PredictionStore: " + modelConf.stores.predictionStore.name);
-        logger.info("[MobiS Model] EvaluationStore: " + modelConf.stores.evaluationStore.name + "\n");
+        logger.info("[MobiS Model] EvaluationStore: " + modelConf.stores.evaluationStore.name);
         
         // Create model instance for specific sensor
         var mobisModel = new Model(modelConf);
@@ -97,34 +124,45 @@ exports.init = function (base) {
         mobisModel["predictionStore"] = modelConf.stores.predictionStore;
         mobisModel["evaluationStore"] = modelConf.stores.evaluationStore;
         
-        mobisModels[sensor.pathId] = mobisModel;
-    });
-    
+        this.mobisModels[sensorId] = mobisModel;
+    }, this);
+}
+
+TrafficExpert.prototype.initAggregates = function () {
     //////// INIT STREAM AGGREGATES ////////
-    sensorsStore.each(function (sensor) {
-        logger.info("[Stream Aggregate] Adding Stream Aggregates for sensor: " + sensor.pathId);
-
+    this.sensorIds.forEach(function (sensorId) {
+        
+        logger.info("[Stream Aggregate] Adding Stream Aggregates for sensor: " + sensorId);
+        
         // Prepare store references
-        var rawStore = measurementStores.rawStores[sensor.pathId]
-        var resampledStore = measurementStores.resampledStores[sensor.pathId]
-        var predictionStore = measurementStores.predictionStores[sensor.pathId]
-        var evaluationStore = measurementStores.evaluationStores[sensor.pathId]
-
+        var rawStore = this.stores.rawStores[sensorId]
+        var resampledStore = this.stores.resampledStores[sensorId]
+        var predictionStore = this.stores.predictionStores[sensorId]
+        var evaluationStore = this.stores.evaluationStores[sensorId]
+        
+        // model
+        var model = this.mobisModels[sensorId];
+        
+        //////// PREPROCESSING ////////
+        // Todo
+        
+        
         //////// RESAMPLER ////////
         logger.info("[Stream Aggregate] adding Resampler");
-        // This resample aggregator creates new resampled store
+
         var resampleInterval = 60 * 60 * 1000;
-        rawStore.addStreamAggr({
-            name: "Resampled", type: "resampler",
+        model['resampler'] = rawStore.addStreamAggr({
+            name: "resampler", type: "resampler",
             outStore: resampledStore.name, timestamp: "DateTime",
             fields: [{ name: "TravelTime", interpolator: "previous" },
-                 { name: "AverageSpeed", interpolator: "previous" }
+                { name: "AverageSpeed", interpolator: "previous" }
             ],
             createStore: false, interval: resampleInterval
         });
         
         //////// ADD JOINS BACK ////////
         logger.info("[Stream Aggregate] adding addJoinsBack");
+        
         // Ads a join back, since it was lost with resampler
         resampledStore.addStreamAggr({
             name: "addJoinsBack",
@@ -133,37 +171,39 @@ exports.init = function (base) {
             },
             saveJson: function () { return {} }
         })
-
-        //////// PREDICTION AND EVALUATION ////////
+        
+        //////// ANALYTICS ////////
         logger.info("[Stream Aggregate] adding Analytics");
+        
         resampledStore.addStreamAggr({
             name: "analytics",
             onAdd: function (rec) {
-                var mobisModel = mobisModels[rec.Sensor.pathId];
-
+                var id = rec.Sensor.pathId
+                var mobisModel = this.mobisModels[id];
+                
                 // analytics pipeline
                 mobisModel.predict(rec);
                 //mobisModel.update(rec);
                 //mobisModel.evaluate(rec);
                 //mobisModel.consoleReport(rec);
-
+                
                 // do not update if count=0 (means that data are set to average)
                 if (rawStore.last.Count != 0) {
                     // do not update if the gap between last record and resampled record is bigger than 2 hours
                     var lastId = (rawStore.length > 2) ? rawStore.length - 2 : 0
                     if (rec.DateTime - rawStore[lastId].DateTime <= 2 * 60 * 60 * 1000) {
                         mobisModel.update(rec);
+                        mobisModel.evaluate(rec);
                     }
-
-                    mobisModel.update(rec);
-                    mobisModel.evaluate(rec);
-                    mobisModel.consoleReport(rec);
+                    
+                    // report to console only if we are in development env
+                    if (env === 'development') mobisModel.consoleReport(rec);
                 }
 
-            },
+            }.bind(this),
             saveJson: function () { return {} }
         });
-
+        
         //////// SEND LATEST PREDICTION ////////
         logger.info("[Stream Aggregate] adding triger to prdictions\n");
         resampledStore.addStreamAggr({
@@ -172,6 +212,11 @@ exports.init = function (base) {
                 // check if prediction is actual, if not, exit from function
                 if (rec.Predictions[0].PredictionTime < new Date()) return;
                 // transform rec to InfoTrip format
+                
+                // TODO:
+                // poslji napovedi samo ce si dobil last.Count != 0, drugace poslji free flow
+                // mogoce lahko to nardis v naslednji funkciji?
+                
                 var transformedRec = InfoTrip.Adapters.transform(rec);
                 // send data if env is 'production', or simulate if else
                 if (env === 'production') {
@@ -185,13 +230,88 @@ exports.init = function (base) {
                 }
             },
             saveJson: function () { return {} }
-        })
-    });
-    
-    //// console.log("\nPipeline initialized...\n");
-    //// TODO also use logger
-    
+        });
+
+    }, this);
 }
+
+
+// load each model aggregate
+TrafficExpert.prototype.saveState = function (path) {
+    var path = (typeof path === 'undefined') ? this.pathDb : path
+    for (var sensorId in this.mobisModels) {
+        if (this.mobisModels.hasOwnProperty(sensorId)) {
+            var model = this.mobisModels[sensorId];
+            logger.info("\nSaving model states for sensor " + sensorId);
+            model.save(path);
+        }
+    }
+}
+
+// load each model aggregate
+TrafficExpert.prototype.loadState = function (path) {
+    var path = (typeof path === 'undefined') ? this.pathDb : path
+    for (var sensorId in this.mobisModels) {
+        if (this.mobisModels.hasOwnProperty(sensorId)) {
+            var model = this.mobisModels[sensorId];
+            logger.info("\nLoading model states for sensor " + sensorId);
+            model.load(path);
+        }
+    }
+}
+
+TrafficExpert.prototype.shutdown = function () {
+    // debugging purpuses - delete it later
+    //logger.debug(JSON.stringify(this.mobisModels['1'].locAvrgs, false, 2))
+    //logger.debug(JSON.stringify(this.mobisModels['1'].linregs, false, 2))
+    //logger.debug(JSON.stringify(this.mobisModels['1'].recordBuffers, false, 2))
+    //logger.debug(JSON.stringify(this.mobisModels['1'].errorModels, false, 2))
+    
+    if (!this.base.isClosed()) {
+        logger.info("Shutting down...");
+        this.saveState();
+        this.base.close();
+        logger.info("Model state is saved. Base is closed.");
+    } else {
+        logger.debug("Base allready closed.")
+    }
+}
+
+TrafficExpert.prototype.backup = function (reopen) {
+    logger.info("Creating backup...");
+    
+    // if true, reopen and relode state after backup
+    var reopen = (typeof reopen === 'undefined') ? false : reopen;
+    
+    // shutdown first (close and save) before backuping
+    if (!this.base.isClosed()) this.shutdown();
+    
+    // copy .db to .backup
+    Utils.Helper.copyFolder(this.pathDb, this.pathBackup);
+    logger.info("Backup created.");
+    
+    //  if reopen flag is true - reopen and load from created backup
+    if (reopen) {
+        logger.info("Reopening model...");
+        // reopen saved base
+        var newBase = new qm.Base({
+            mode: 'open',
+            dbPath: this.pathDb
+            //dbPath: this.pathBackup // backup is not saved properly
+        })
+        newBase["mode"] = 'open';
+        
+        // load saved state
+        this.init(newBase);
+        debugger;
+        this.loadState(this.pathDb); 
+        //this.loadState(this.pathBackup); // this should load from pathBackup
+        logger.info("Model reopened.");
+    }
+}
+
+///////////////////// EXPORTS /////////////////////
+module.exports = TrafficExpert;
 
 ///////////////////// LOADING DATA: SIMULATING DATA FLOW /////////////////////
 // load rawStore from file

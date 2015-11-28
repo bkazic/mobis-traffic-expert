@@ -1,6 +1,6 @@
 ﻿var qm = require('qminer');
 var assert = require('assert');
-var trafficExpert = require('../TrafficExpert.js');
+var TrafficExpert = require('../TrafficExpert.js');
 var server = require('../server/server.js');
 var path = require('path');
 var request = require('supertest');
@@ -36,13 +36,14 @@ describe('Server test', function () {
         })
         
         // Initialize trafficExpert service
+        var trafficExpert = new TrafficExpert();
         trafficExpert.init(base);
         
         // Import initial data
         qm.load.jsonFile(base.store("rawStore_1"), path.join(__dirname, "../sandbox/data-small.json"));
         
         // Initialize and start serverserver
-        server.init(base);
+        server.init(trafficExpert);
         server.start(config.trafficPredictionService.server.port);
     });
     

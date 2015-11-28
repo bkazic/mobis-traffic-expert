@@ -1,6 +1,6 @@
 {
   "name": "TrafficPrediction",
-  "version": "0.4.0",
+  "version": "2.0.0",
   "description": "MobiS traffic expert scenario. Real time traffic forecasting by using Bluetooth data provided by partner InfoTrip.",
   "license": "BSD-2-Clause-FreeBSD",
   "main": "server.js",
@@ -14,14 +14,14 @@
   },
   "scripts": {
     "start": "set NODE_ENV=development&& node index.js",
-    "test": "set NODE_ENV=test&& mocha"
+    "test": "set NODE_ENV=test&& mocha --timeout=30000"
   },
   "dependencies": {
     "basic-auth": "^1.0.3",
     "body-parser": "^1.14.0",
     "express": "^4.13.3",
     "morgan": "^1.6.1",
-    "qminer": "^2.5.0",
+    "qminer": "^3.5.0",
     "request": "^2.62.0",
     "winston": "^1.0.1"
   },

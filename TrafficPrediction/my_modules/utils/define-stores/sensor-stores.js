@@ -12,7 +12,11 @@ createSensorsStore = function (base) {
         ]
     }
     
-    base.createStore(storeDef);
+    // create stores if base is opened in faCreate (1) mode
+    if (base.getStats().access == 1) {
+        base.createStore(storeDef);
+    }
+
     qm.load.jsonFile(base.store('sensorsStore'), path.join(__dirname , '../../../sandbox//sensors.json'));
     
     return base.store("sensorsStore")
@@ -85,7 +89,10 @@ createMeasurementStores = function (base) {
             }
         ]
 
-        base.createStore(storeDef)
+        // create stores if base is opened in faCreate (1) mode
+        if (base.getStats().access == 1) {
+            base.createStore(storeDef);
+        }
 
         // saving instances in object which will be returned
         stores.rawStores[id] = base.store(rawStoreNm);
