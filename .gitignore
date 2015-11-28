@@ -6090,3 +6090,23 @@ $RECYCLE.BIN/
 /RealTimeImputor/test.js
 /TODO.txt
 /TrafficExpert.sln
+/TrafficPrediction/my_modules/utils/model.js
+/TrafficPrediction/TrafficPrediction.js
+/TrafficPrediction/InfoTrip/test/*.js
+/TrafficPrediction/*.js
+/TrafficPrediction/*.njsproj
+/TrafficPrediction/*.def
+/TrafficPrediction/my_modules/utils/baseline-models/examples/*.txt
+/TrafficPrediction/my_modules/utils/baseline-models/examples/*.js
+/TrafficPrediction/my_modules/utils/*.js
+/TrafficPrediction/my_modules/utils/define-stores/*.txt
+/TrafficPrediction/my_modules/utils/special-dates/test/db
+/TrafficPrediction/npm start
+/TrafficPrediction/my_modules/utils/specialDates.txt
+/TrafficPrediction/public/controller.js
+/TrafficPrediction/public/index.html
+/TrafficPrediction/qm.conf
+/TrafficPrediction/store.json
+/TrafficPrediction/test/routes-test.js
+/error.txt
+/traffic_expert_screenshot.png

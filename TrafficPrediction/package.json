@@ -1,6 +1,6 @@
 {
   "name": "TrafficPrediction",
-  "version": "0.4.0",
+  "version": "2.0.0",
   "description": "MobiS traffic expert scenario. Real time traffic forecasting by using Bluetooth data provided by partner InfoTrip.",
   "license": "BSD-2-Clause-FreeBSD",
   "main": "server.js",
